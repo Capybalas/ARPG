@@ -1,5 +1,9 @@
 # Visual Studio 2015 user specific files
 .vs/
+.vsconfig
+
+# Rider
+.idea/
 
 # Compiled Object files
 *.slo
@@ -41,6 +45,8 @@
 *.VC.db
 *.VC.opendb
 
+Config/HoloLens/*
+
 # Precompiled Assets
 SourceArt/**/*.png
 SourceArt/**/*.tga
@@ -72,3 +78,11 @@ Plugins/**/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+# Assets
+Content/*
+
+Plugins/Developer/RiderLink/
+
+.vscode/
+/CaARPG.sln.DotSettings.user
