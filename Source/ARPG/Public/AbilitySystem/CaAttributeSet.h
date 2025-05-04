@@ -8,19 +8,16 @@
 #include "CaAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
-	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
-	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
+ 	GAMEPLAYATTRIBUTE_PROPERTY_GETTER(ClassName, PropertyName) \
+ 	GAMEPLAYATTRIBUTE_VALUE_GETTER(PropertyName) \
+ 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
+ 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 USTRUCT()
 struct FEffectProperties
 {
 	GENERATED_BODY()
-
-	FEffectProperties()
-	{
-	}
+	FEffectProperties() = default;
 
 	FGameplayEffectContextHandle EffectContextHandle;
 
@@ -49,8 +46,6 @@ struct FEffectProperties
 	ACharacter* TargetCharacter = nullptr;
 };
 
-template <class T>
-using TStaticFuncPtr = typename TBaseStaticDelegateInstance<T, FDefaultDelegateUserPolicy>::FFuncPtr;
 /**
  * 
  */
@@ -61,41 +56,63 @@ class ARPG_API UCaAttributeSet : public UAttributeSet
 
 public:
 	UCaAttributeSet();
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 
-	// Attribute
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= OnRep_Health, Category = "Attributes")
+	TMap<FGameplayTag, FGameplayAttribute (*)()> TagsToAttributes;
+	/**
+	 * 主要属性
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Health);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= OnRep_MaxHealth, Category = "Attributes")
+	// MaxHealth
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxHealth);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= OnRep_Mana, Category = "Attributes")
+	// Mana
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Mana);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing= OnRep_MaxMana, Category = "Attributes")
+	// MaxMana
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxMana);
 
-	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
+	// AttackDamage
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData AttackDamage;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, AttackDamage);
 
-	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData& OldHealth) const;
+	// Armor
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData Armor;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Armor);
 
-	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
+	// AbilityPower
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData AbilityPower;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, AbilityPower);
 
-	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData& OldMana) const;
+	// MagicResistance
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData MagicResistance;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MagicResistance);
+
+	/**
+	 * Meta Attributes
+	 */
+	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
+	FGameplayAttributeData IncomingDamage;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, IncomingDamage)
 
 private:
-	void HandleIncomingDamage(const FEffectProperties& Props);
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;
-	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bBlockedHit, bool bCriticalHit) const;
+	void HandleIncomingDamage(const FEffectProperties& Props);
+	void ShowFloatingText(const FEffectProperties& Props, float Damage, bool bCriticalHit,
+	                      FGameplayTag DamageType) const;
 };

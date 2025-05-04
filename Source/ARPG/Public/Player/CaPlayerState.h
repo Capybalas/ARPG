@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -19,11 +19,12 @@ class ARPG_API ACaPlayerState : public APlayerState, public IAbilitySystemInterf
 
 public:
 	ACaPlayerState();
-
+	// virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	UAttributeSet* GetAttributeSet() const { return AttributeSet; };
 
-protected:
+	FORCEINLINE UAttributeSet* GetAttributeSet() const { return AttributeSet; }
+
+private:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 

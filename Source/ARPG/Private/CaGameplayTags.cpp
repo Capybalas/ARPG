@@ -1,5 +1,4 @@
-﻿#include "CaGameplayTags.h"
-
+#include "CaGameplayTags.h"
 #include "GameplayTagsManager.h"
 
 FCaGameplayTags FCaGameplayTags::GameplayTags;

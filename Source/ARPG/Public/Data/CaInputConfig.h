@@ -7,17 +7,15 @@
 #include "Engine/DataAsset.h"
 #include "CaInputConfig.generated.h"
 
-class UInputAction;
-
 USTRUCT(BlueprintType)
 struct FCaInputAction
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category="Input")
-	TObjectPtr<UInputAction> InputAction = nullptr;
+	UPROPERTY(EditDefaultsOnly)
+	const class UInputAction* InputAction = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, Category="Input")
+	UPROPERTY(EditDefaultsOnly)
 	FGameplayTag InputTag = FGameplayTag();
 };
 
