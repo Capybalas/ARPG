@@ -21,13 +21,12 @@ enum class ECharacterClass : uint8
 	Elementalist UMETA(DisplayName = "元素师"),
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCharacterClassDefaultInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults",
-		meta = (DisplayName = "单位主属性", ToolTip = "加载的角色主属性"))
+	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults", meta = (DisplayName = "单位主属性", ToolTip = "加载的角色主属性"))
 	TSubclassOf<UGameplayEffect> PrimaryAttributes;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Class Defaults",

@@ -14,6 +14,7 @@ UCLASS()
 class ARPG_API ACaAIController : public AAIController
 {
 	GENERATED_BODY()
+
 public:
 	ACaAIController();
 

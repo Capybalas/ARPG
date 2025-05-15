@@ -10,6 +10,7 @@
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/CaAbilitySystemLibrary.h"
 #include "Interface/CombatInterface.h"
+#include "Net/UnrealNetwork.h"
 #include "Player/CaPlayerController.h"
 
 UCaAttributeSet::UCaAttributeSet()
@@ -30,6 +31,32 @@ UCaAttributeSet::UCaAttributeSet()
 void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MagicResistance, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AbilityPower, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Health, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+}
+
+void UCaAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
+{
+	Super::PreAttributeBaseChange(Attribute, NewValue);
+	if (Attribute == GetHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
+	}
+
+	if (Attribute == GetManaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+	}
 }
 
 void UCaAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -70,6 +97,46 @@ void UCaAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, f
 	{
 		SetMana(GetMaxMana());
 	}
+}
+
+void UCaAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Health, OldHealth);
+}
+
+void UCaAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UCaAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Mana, OldMana);
+}
+
+void UCaAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MaxMana, OldMaxMana);
+}
+
+void UCaAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, AttackDamage, OldAttackDamage);
+}
+
+void UCaAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Armor, OldArmor);
+}
+
+void UCaAttributeSet::OnRep_AbilityPower(const FGameplayAttributeData& OldAbilityPower) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, AbilityPower, OldAbilityPower);
+}
+
+void UCaAttributeSet::OnRep_MagicResistance(const FGameplayAttributeData& OldMagicResistance) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MagicResistance, OldMagicResistance);
 }
 
 void UCaAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -117,9 +184,13 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
 		// 判断是否致命
-		const bool bFatal = NewHealth <= 0.f;
-		if (bFatal)
+
+		if (NewHealth <= 0.f)
 		{
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
+			{
+				CombatInterface->Die(UCaAbilitySystemLibrary::GetDeathImpulse((Props.EffectContextHandle)));
+			}
 		}
 		else
 		{
@@ -131,32 +202,6 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
 		}
-		// if (bFatal)
-		// {
-		// 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
-		// 	{
-		// 		FVector Impulse = UCaAbilitySystemBPLibrary::GetDeathImpulse(Props.EffectContextHandle);
-		// 		CombatInterface->Die(UCaAbilitySystemBPLibrary::GetDeathImpulse(Props.EffectContextHandle));
-		// 	}
-		// }
-		// else
-		// {
-		// 	// 如果不是致命伤害，则执行被击逻辑
-		// 	if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(
-		// 		Props.TargetCharacter))
-		// 	{
-		// 		FGameplayTagContainer TagContainer;
-		// 		TagContainer.AddTag(FCaGameplayTags::Get().Effects_HitReact);
-		// 		Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-		// 	}
-		//
-		// 	// 获取击退力，并在不为零时应用
-		// 	const FVector& KnockbackForce = UCaAbilitySystemBPLibrary::GetKnockbackForce(Props.EffectContextHandle);
-		// 	if (!KnockbackForce.IsNearlyZero(1.f))
-		// 	{
-		// 		Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
-		// 	}
-		// }
 		const bool bCriticalHit = UCaAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		const FGameplayTag DamageType = UCaAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
 		ShowFloatingText(Props, LocalIncomingDamage, bCriticalHit, DamageType);

@@ -62,6 +62,12 @@ bool ACaCharacterBase::IsBeingShocked_Implementation() const
 void ACaCharacterBase::Die(const FVector& DeathImpulse)
 {
 	Weapon->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	// 死亡时移除血条
+	if (HealthBar)
+	{
+		HealthBar->DestroyComponent();
+		HealthBar == nullptr;
+	}
 	MulticastHandleDeath(DeathImpulse);
 }
 
@@ -85,7 +91,7 @@ FVector ACaCharacterBase::GetCombatSocketLocation_Implementation(const FGameplay
 	const FCaGameplayTags& GameplayTags = FCaGameplayTags::Get();
 	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_Weapon) && IsValid(Weapon))
 	{
-		return Weapon->GetSocketLocation(WeaponHandSocket);
+		return Weapon->GetSocketLocation(WeaponTipSocketName);
 	}
 
 	if (MontageTag.MatchesTagExact(GameplayTags.CombatSocket_LeftHand))
@@ -106,6 +112,28 @@ FVector ACaCharacterBase::GetCombatSocketLocation_Implementation(const FGameplay
 	return FVector();
 }
 
+TArray<FTaggedMontage> ACaCharacterBase::GetAttackMontage_Implementation()
+{
+	return AttackMontages;
+}
+
+UAnimMontage* ACaCharacterBase::GetCombatMontage_Implementation()
+{
+	return ComboMontage;
+}
+
+FTaggedMontage ACaCharacterBase::GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag)
+{
+	for (FTaggedMontage TaggedMontage : AttackMontages)
+	{
+		if (TaggedMontage.MontageTag == MontageTag)
+		{
+			return TaggedMontage;
+		}
+	}
+	return FTaggedMontage();
+}
+
 UAnimMontage* ACaCharacterBase::GetHitReactMontage_Implementation()
 {
 	return HitReactMontage;
@@ -119,6 +147,16 @@ void ACaCharacterBase::StartWeaponNiagara_Implementation()
 void ACaCharacterBase::EndWeaponNiagara_Implementation()
 {
 	ICombatInterface::EndWeaponNiagara_Implementation();
+}
+
+AActor* ACaCharacterBase::GetAvatar_Implementation()
+{
+	return this;
+}
+
+UNiagaraSystem* ACaCharacterBase::GetBloodEffect_Implementation()
+{
+	return BloodEffect;
 }
 
 void ACaCharacterBase::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
@@ -163,6 +201,8 @@ void ACaCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 
 void ACaCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
+	Weapon->AttachToComponent(GetMesh(), AttachmentRules, WeaponHandSocket);
 }
 
 void ACaCharacterBase::AddCharacterAbilities()

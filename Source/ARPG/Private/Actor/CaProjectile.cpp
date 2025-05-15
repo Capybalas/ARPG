@@ -68,6 +68,10 @@ void ACaProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AA
                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
                                     const FHitResult& SweepResult)
 {
+	if (IsValidWallCollision(OtherComp))
+	{
+		OnHit();
+	}
 	if (!IsValidOverlap(OtherActor)) return;
 	if (!bHit) OnHit();
 
@@ -105,4 +109,9 @@ bool ACaProjectile::IsValidOverlap(AActor* OtherActor)
 	if (!UCaAbilitySystemLibrary::IsNotFriend(SourceAvatarActor, OtherActor)) return false;
 
 	return true;
+}
+
+bool ACaProjectile::IsValidWallCollision(UPrimitiveComponent* OtherComp)
+{
+	return OtherComp->GetCollisionObjectType() == ECC_WorldStatic;
 }

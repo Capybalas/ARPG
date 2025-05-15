@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/CaCharacterBase.h"
+#include "Interface/EnemyInterface.h"
 #include "CaEnemyCharacter.generated.h"
 
 class UBehaviorTree;
@@ -13,7 +14,7 @@ class ACaAIController;
  * 
  */
 UCLASS()
-class ARPG_API ACaEnemyCharacter : public ACaCharacterBase
+class ARPG_API ACaEnemyCharacter : public ACaCharacterBase, public IEnemyInterface
 {
 	GENERATED_BODY()
 
@@ -22,11 +23,24 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void BeginPlay() override;
 
+	/*
+	 * Enemy Interface
+	 */
+
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+
+	virtual AActor* GetCombatTarget_Implementation() const override;
+
+	/*
+	 * End Enemy Interface
+	 */
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float LifeSpan = 5.f;
 
 	virtual void Die(const FVector& DeathImpulse) override;
-	void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 protected:
 	virtual void InitAbilityActorInfo() override;
@@ -37,7 +51,4 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<ACaAIController> CaAIController;
-
-	// UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	// TObjectPtr<UWidgetComponent> SelectEnemy;
 };

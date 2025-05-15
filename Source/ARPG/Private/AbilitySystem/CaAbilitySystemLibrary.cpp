@@ -6,13 +6,14 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CaAbilityTypes.h"
 #include "CaGameplayTags.h"
-#include "Game/CaGameModeBase.h"
+#include "Engine/OverlapResult.h"
+#include "Game/CaGameMode.h"
 #include "Interface/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 
 UCharacterClassInfo* UCaAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
-	const ACaGameModeBase* CaGameModeBase = Cast<ACaGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	const ACaGameMode* CaGameModeBase = Cast<ACaGameMode>(UGameplayStatics::GetGameMode(WorldContextObject));
 	if (CaGameModeBase == nullptr)
 	{
 		return nullptr;
@@ -22,14 +23,14 @@ UCharacterClassInfo* UCaAbilitySystemLibrary::GetCharacterClassInfo(const UObjec
 }
 
 void UCaAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC,
-                                                     ECharacterClass CharacterClass)
+                                                   ECharacterClass CharacterClass)
 {
 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	if (CharacterClassInfo == nullptr) return;
 
 	for (const TSubclassOf<UGameplayAbility> AbilityClass : CharacterClassInfo->CommonAbilities)
 	{
-		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1.0f);
+		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1.0);
 		ASC->GiveAbility(AbilitySpec);
 	}
 	const FCharacterClassDefaultInfo& DefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
@@ -45,21 +46,21 @@ void UCaAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextOb
 }
 
 void UCaAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
-                                                            ECharacterClass CharacterClass, float Level,
-                                                            UAbilitySystemComponent* ASC)
+                                                          ECharacterClass CharacterClass, float Level,
+                                                          UAbilitySystemComponent* ASC)
 {
 	AActor* AvatarActor = ASC->GetAvatarActor();
 
 	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	FCharacterClassDefaultInfo ClassDefaultInfo = CharacterClassInfo->GetClassDefaultInfo(CharacterClass);
 
-	FGameplayEffectContextHandle DefaultAttributesContextHandle = ASC->MakeEffectContext();
-	DefaultAttributesContextHandle.AddSourceObject(AvatarActor);
-
-	const FGameplayEffectSpecHandle DefaultAttributesSpecHandle = ASC->MakeOutgoingSpec(
-		ClassDefaultInfo.PrimaryAttributes, Level, DefaultAttributesContextHandle);
-	ASC->ApplyGameplayEffectSpecToSelf(*DefaultAttributesSpecHandle.Data.Get());
+	FGameplayEffectContextHandle PrimaryAttributesContextHandle = ASC->MakeEffectContext();
+	PrimaryAttributesContextHandle.AddSourceObject(AvatarActor);
+	const FGameplayEffectSpecHandle PrimaryAttributesSpecHandle = ASC->MakeOutgoingSpec(
+		ClassDefaultInfo.PrimaryAttributes, Level, PrimaryAttributesContextHandle);
+	ASC->ApplyGameplayEffectSpecToSelf(*PrimaryAttributesSpecHandle.Data.Get());
 }
+
 
 FVector UCaAbilitySystemLibrary::GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle)
 {
@@ -95,7 +96,7 @@ FGameplayTag UCaAbilitySystemLibrary::GetDamageType(const FGameplayEffectContext
 }
 
 void UCaAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,
-                                                const FVector& InImpulse)
+                                              const FVector& InImpulse)
 {
 	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
@@ -115,7 +116,7 @@ bool UCaAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& 
 }
 
 void UCaAbilitySystemLibrary::SetIsCriticalHit(FGameplayEffectContextHandle EffectContextHandle,
-                                                 bool bInIsCriticalHit)
+                                               bool bInIsCriticalHit)
 {
 	if (FCaGameplayEffectContext* CaGameplayEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.
 		Get()))
@@ -134,7 +135,7 @@ bool UCaAbilitySystemLibrary::IsNotFriend(AActor* FirstActor, AActor* SecondActo
 }
 
 void UCaAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& EffectContextHandle,
-                                              const FGameplayTag InDamageType)
+                                            const FGameplayTag InDamageType)
 {
 	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
@@ -155,18 +156,38 @@ FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FD
 	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
-	// if (DamageEffectParams.DamageType.MatchesTag(GameplayTags.AttackDamage))
-	// {
-	// 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.DamageType, 1.f);
-	// }
-	// else
-	// {
-	// 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.DamageType, 0.f);
-	// }
+
 	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageEffectParams.DamageType,
 	                                                              DamageEffectParams.BaseDamage);
 
 
 	DamageEffectParams.TargetAbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 	return EffectContextHandle;
+}
+
+void UCaAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+                                                         TArray<AActor*>& OutOverlappingActors,
+                                                         const TArray<AActor*>& ActorsToIgnore, float Radius,
+                                                         const FVector& SphereOrigin)
+{
+	FCollisionQueryParams SphereParams;
+	SphereParams.AddIgnoredActors(ActorsToIgnore);
+
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject,
+	                                                             EGetWorldErrorMode::LogAndReturnNull))
+	{
+		TArray<FOverlapResult> Overlaps;
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity,
+		                                FCollisionObjectQueryParams(
+			                                FCollisionObjectQueryParams::InitType::AllDynamicObjects),
+		                                FCollisionShape::MakeSphere(Radius), SphereParams);
+		for (FOverlapResult& Overlap : Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(
+				Overlap.GetActor()))
+			{
+				OutOverlappingActors.AddUnique(ICombatInterface::Execute_GetAvatar(Overlap.GetActor()));
+			}
+		}
+	}
 }

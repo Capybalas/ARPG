@@ -47,25 +47,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+		meta = (DisplayName = "武器附加点"))
 	FName WeaponHandSocket = FName("weapon_socket_r");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
-		meta = (DisplayName = "左手伤害判定点", ToolTip = "怪物武器的判定点"))
+		meta = (DisplayName = "武器附加点"))
+	FName WeaponTipSocketName = FName("s1");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+		meta = (DisplayName = "左手伤害判定点", ToolTip = "武器的判定点"))
 	FName LeftHandTipSocketName = FName("left_hand_socket");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
-		meta = (DisplayName = "右手伤害判定点", ToolTip = "怪物武器的判定点"))
+		meta = (DisplayName = "右手伤害判定点", ToolTip = "武器的判定点"))
 	FName RightHandTipSocketName = FName("right_hand_socket");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
-		meta = (DisplayName = "尾巴伤害判定点", ToolTip = "怪物武器的判定点"))
+		meta = (DisplayName = "尾巴伤害判定点", ToolTip = "武器的判定点"))
 	FName TailSocketName = FName("");
 
 	virtual TArray<TSubclassOf<UGameplayAbility>> GetGameplayAbilities_Implementation() const;
 
 	/**
-	 * Combo Interface
+	 * Combat Interface
 	 */
 
 	virtual void SetIsBeingShocked_Implementation(bool bInShock) override;
@@ -78,13 +83,19 @@ public:
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	FOnASCRegistered OnASCRegistered;
 
+	virtual TArray<FTaggedMontage> GetAttackMontage_Implementation() override;
+	virtual UAnimMontage* GetCombatMontage_Implementation() override;
+	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 
 	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void StartWeaponNiagara_Implementation() override;
 	virtual void EndWeaponNiagara_Implementation() override;
 
+	virtual AActor* GetAvatar_Implementation() override;
+
+	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
 	/**
-	 * End Combo Interface
+	 * End Combat Interface
 	 */
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsBeingShocked = false;
@@ -93,6 +104,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat")
 	bool bHitReacting = false;
+
+	UPROPERTY(EditAnywhere, Category="Combat")
+	TArray<FTaggedMontage> AttackMontages;
 
 protected:
 	// Called when the game starts or when spawned
@@ -137,6 +151,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara")
 	TObjectPtr<UNiagaraSystem> WeaponNiagaraSystem;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UNiagaraSystem* BloodEffect;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")

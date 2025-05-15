@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "CaGameModeBase.generated.h"
+#include "CaGameMode.generated.h"
 
 class UCharacterClassInfo;
 /**
  * 
  */
 UCLASS()
-class ARPG_API ACaGameModeBase : public AGameModeBase
+class ARPG_API ACaGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 

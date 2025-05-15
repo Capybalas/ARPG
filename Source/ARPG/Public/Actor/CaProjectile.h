@@ -45,10 +45,14 @@ protected:
 	TObjectPtr<USphereComponent> Sphere;
 
 	bool IsValidOverlap(AActor* OtherActor);
+	bool IsValidWallCollision(UPrimitiveComponent* OtherComp);
 	bool bHit = false;
 
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 Penetrate = -1.f;
 
 private:
 	UPROPERTY(EditDefaultsOnly)

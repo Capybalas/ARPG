@@ -16,16 +16,11 @@ class ARPG_API UCaAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 
 public:
+	void AbilityActorInfoSet();
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	bool bStartupAbilitiesGiven = false;
-	void AbilityActorInfoSet();
-	UFUNCTION(BlueprintCallable, Category="CaAbilitySystemLibrary|CharacterClassDefaults")
-	static void GiveStartupAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* ASC,
-	                                 ECharacterClass CharacterClass);
-	UFUNCTION(BlueprintCallable, Category="CaAbilitySystemLibrary|CharacterClassDefaults")
-	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
 
 protected:
 	UFUNCTION(Client, Reliable)

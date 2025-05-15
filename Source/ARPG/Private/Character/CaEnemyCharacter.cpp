@@ -11,6 +11,7 @@
 #include "AbilitySystem/CaAttributeSet.h"
 #include "AI/CaAIController.h"
 #include "UI/Widget/CaUserWidget.h"
+#include "BehaviorTree/BehaviorTree.h"
 
 ACaEnemyCharacter::ACaEnemyCharacter()
 {
@@ -47,12 +48,9 @@ void ACaEnemyCharacter::PossessedBy(AController* NewController)
 
 	if (!HasAuthority()) return;
 	CaAIController = Cast<ACaAIController>(NewController);
-	// CaAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	CaAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	CaAIController->RunBehaviorTree(BehaviorTree);
-	// CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
-
-	// CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("RangedAttacker"),
-	//                                                          CharacterClass != ECharacterClass::GoblinWarrior);
+	CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
 }
 
 void ACaEnemyCharacter::BeginPlay()
@@ -97,9 +95,20 @@ void ACaEnemyCharacter::BeginPlay()
 	}
 }
 
+void ACaEnemyCharacter::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* ACaEnemyCharacter::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
+}
+
 void ACaEnemyCharacter::Die(const FVector& DeathImpulse)
 {
 	SetLifeSpan(LifeSpan);
+	if (CaAIController) CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("Dead"), true);
 	Super::Die(DeathImpulse);
 }
 
@@ -117,8 +126,6 @@ void ACaEnemyCharacter::InitAbilityActorInfo()
 {
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	Cast<UCaAbilitySystemComponent>(AbilitySystemComponent)->AbilityActorInfoSet();
-
-
 	if (HasAuthority())
 	{
 		InitializeDefaultAttributes();

@@ -60,6 +60,8 @@ public:
 	 */
 	FGameplayTag Abilities_FireBolt;
 
+	FGameplayTag Abilities_Attack;
+
 
 	/*
 	 * Gameplay Effects
@@ -68,9 +70,11 @@ public:
 
 
 	/*
-	 * End Gameplay Effects
+	 * Montage
 	 */
-
+	FGameplayTag Montage_Attack_Weapon;
+	FGameplayTag Montage_Attack_RightHand;
+	FGameplayTag Montage_Attack_LeftHand;
 
 private:
 	static FCaGameplayTags GameplayTags;

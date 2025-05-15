@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CaAbilitySystemComponent.h"
 #include "Data/CharacterClassInfo.h"
+#include "Interface/CombatInterface.h"
 #include "CaAbilitySystemLibrary.generated.h"
 
 struct FDamageEffectParams;
@@ -57,4 +58,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams);
+
+	/*
+	 * Gameplay Mechanics
+	 */
+
+	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
+	static void GetLivePlayersWithinRadius(const UObject* WorldContextObject, TArray<AActor*>& OutOverlappingActors,
+	                                       const TArray<AActor*>& ActorsToIgnore, float Radius,
+	                                       const FVector& SphereOrigin);
 };

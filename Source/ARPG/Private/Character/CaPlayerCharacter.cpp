@@ -4,6 +4,7 @@
 #include "Character/CaPlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
+#include "CaGameplayTags.h"
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 #include "AbilitySystem/CaAttributeSet.h"
 #include "Camera/CameraComponent.h"
@@ -22,6 +23,8 @@ ACaPlayerCharacter::ACaPlayerCharacter()
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>("TopDownCameraComponent");;
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false;
+
+	CharacterClass = ECharacterClass::Player;
 
 	// 创建头部骨骼网格组件并附加到角色主骨骼网格
 	SM_Gender_00_Head = CreateDefaultSubobject<USkeletalMeshComponent>("SM_Gender_00_Head");
@@ -80,7 +83,6 @@ void ACaPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	InitAbilityActorInfo();
-	InitializeDefaultAttributes();
 	AddCharacterAbilities();
 }
 
@@ -97,6 +99,7 @@ void ACaPlayerCharacter::OnRep_PlayerState()
 
 void ACaPlayerCharacter::BeginPlay()
 {
+	Super::BeginPlay();
 	if (UCaUserWidget* CaUserWidget = Cast<UCaUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
 		CaUserWidget->SetWidgetController(this);
@@ -104,6 +107,20 @@ void ACaPlayerCharacter::BeginPlay()
 
 	if (const UCaAttributeSet* CaAS = Cast<UCaAttributeSet>(AttributeSet))
 	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
 		OnHealthChanged.Broadcast(CaAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(CaAS->GetMaxHealth());
 	}
@@ -118,4 +135,6 @@ void ACaPlayerCharacter::InitAbilityActorInfo()
 	AbilitySystemComponent = CaPlayerState->GetAbilitySystemComponent();
 	AttributeSet = CaPlayerState->GetAttributeSet();
 	OnASCRegistered.Broadcast(AbilitySystemComponent);
+
+	InitializeDefaultAttributes();
 }
