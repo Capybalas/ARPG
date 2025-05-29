@@ -189,7 +189,7 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		{
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
 			{
-				CombatInterface->Die(UCaAbilitySystemLibrary::GetDeathImpulse((Props.EffectContextHandle)));
+				CombatInterface->Die(UCaAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
 			}
 		}
 		else
@@ -200,6 +200,11 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 				FGameplayTagContainer TagContainer;
 				TagContainer.AddTag(FCaGameplayTags::Get().Effects_HitReact);
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			const FVector& KnockbackForce = UCaAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
 			}
 		}
 		const bool bCriticalHit = UCaAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);

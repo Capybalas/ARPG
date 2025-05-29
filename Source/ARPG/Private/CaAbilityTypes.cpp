@@ -86,9 +86,14 @@ bool FCaGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 				RepBits |= 1 << 19;
 			}
 		}
+
+		if (bIsAttack)
+		{
+			RepBits |= 1 << 20;
+		}
 	}
 
-	Ar.SerializeBits(&RepBits, 19);
+	Ar.SerializeBits(&RepBits, 20);
 
 	if (RepBits & (1 << 0))
 	{
@@ -189,6 +194,11 @@ bool FCaGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 		{
 			RadialDamageOrigin.NetSerialize(Ar, Map, bOutSuccess);
 		}
+	}
+
+	if (RepBits & (1 << 20))
+	{
+		Ar << bIsAttack;
 	}
 
 

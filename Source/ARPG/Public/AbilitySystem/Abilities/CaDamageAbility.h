@@ -29,6 +29,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
+		meta = (DisplayName = "攻击伤害"))
+	bool bIsAttack = false;
+
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
@@ -40,6 +44,26 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
 		meta = (DisplayName = "造成伤害", ToolTip = "影响该技能的伤害值"))
 	FScalableFloat Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage",
+		meta = (DisplayName = "死亡冲量", ToolTip = "该技能造成死亡时对死亡单位造成的物理冲击力"))
+	float DeathImpulseMagnitude = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage",
+		meta = (DisplayName = "冲量弧度", ToolTip = "该技能造成伤害时，受伤单位会被击飞到什么方向"))
+	float AttackImpulse = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "击退", ToolTip = "该技能造成伤害时会对受伤单位造成击退"))
+	float KnockbackForceMagnitude = 60.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "击退几率"))
+	float KnockbackChance = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "击飞角度"))
+	float Pitch = 10.f;
 
 private:
 	float DamageValue = 0.f;

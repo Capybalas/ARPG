@@ -162,15 +162,10 @@ UNiagaraSystem* ACaCharacterBase::GetBloodEffect_Implementation()
 void ACaCharacterBase::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
-	// 启用武器的物理模拟，使武器能够受到物理力的影响（如碰撞、重力等）
+	
 	Weapon->SetSimulatePhysics(true);
-
-	// 启用武器的重力，使武器受到重力影响
 	Weapon->SetEnableGravity(true);
-
-	// 设置武器的碰撞模式为仅物理碰撞，这意味着它只参与物理计算，不会触发其他类型的碰撞事件（如触发事件）
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
-
 	Weapon->AddImpulse(DeathImpulse * 0.1f, NAME_None, true);
 
 	// 启用角色网格（通常是角色的视觉模型）的物理模拟

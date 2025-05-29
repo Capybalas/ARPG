@@ -10,69 +10,93 @@ struct FDamageEffectParams
 {
 	GENERATED_BODY()
 
+	// 构造函数
 	FDamageEffectParams()
 	{
 	}
 
+	// 蓝图可读写的属性，表示该伤害效果的上下文对象，通常用于获取与伤害相关的世界信息
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UObject> WorldContextObject = nullptr;
 
+	// 蓝图可读写的属性，表示伤害效果的 GameplayEffect 类型，用于定义伤害的具体效果
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> DamageGameplayEffectClass = nullptr;
 
+	// 蓝图可读写的属性，表示伤害来源的 AbilitySystemComponent，用于确定伤害的施加者
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAbilitySystemComponent> SourceAbilitySystemComponent;
 
+	// 蓝图可读写的属性，表示伤害目标的 AbilitySystemComponent，用于确定伤害的承受者
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAbilitySystemComponent> TargetAbilitySystemComponent;
 
+	// 蓝图可读写的属性，表示基础伤害值，是伤害计算的基础数值
 	UPROPERTY(BlueprintReadWrite)
 	float BaseDamage = 0.f;
 
+	// 蓝图可读写的属性，表示技能等级，可能用于影响伤害值的计算
 	UPROPERTY(BlueprintReadWrite)
 	float AbilityLevel = 1.f;
 
+	// 蓝图可读写的属性，表示伤害类型，用于区分不同类型的伤害（例如物理伤害、魔法伤害等）
 	UPROPERTY(BlueprintReadWrite)
 	FGameplayTag DamageType = FGameplayTag();
 
+	// 蓝图可读写的属性，表示施加负面效果（Debuff）的概率，范围为 0 到 1
 	UPROPERTY(BlueprintReadWrite)
 	float DebuffChance = 0.f;
 
+	// 蓝图可读写的属性，表示负面效果的伤害值
 	UPROPERTY(BlueprintReadWrite)
 	float DebuffDamage = 0.f;
 
+	// 蓝图可读写的属性，表示负面效果的持续时间
 	UPROPERTY(BlueprintReadWrite)
 	float DebuffDuration = 0.f;
 
+	// 蓝图可读写的属性，表示负面效果的触发频率
 	UPROPERTY(BlueprintReadWrite)
 	float DebuffFrequency = 0.f;
 
+	// 蓝图可读写的属性，表示死亡冲击的强度，用于在目标死亡时施加冲击力
 	UPROPERTY(BlueprintReadWrite)
 	float DeathImpulseMagnitude = 0.f;
 
+	// 蓝图可读写的属性，表示死亡冲击的方向和大小
 	UPROPERTY(BlueprintReadWrite)
 	FVector DeathImpulse = FVector::ZeroVector;
 
+	// 蓝图可读写的属性，表示击退力的强度，用于在目标被击中时施加击退效果
 	UPROPERTY(BlueprintReadWrite)
 	float KnockbackForceMagnitude = 0.f;
 
+	// 蓝图可读写的属性，表示击退效果的概率，范围为 0 到 1
 	UPROPERTY(BlueprintReadWrite)
 	float KnockbackChance = 0.f;
 
+	// 蓝图可读写的属性，表示击退力的方向和大小
 	UPROPERTY(BlueprintReadWrite)
 	FVector KnockbackForce = FVector::ZeroVector;
 
+	// 蓝图可读写的属性，表示是否为范围伤害，用于区分单体伤害和范围伤害
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsRadialDamage = false;
 
+	// 蓝图可读写的属性，表示范围伤害的内半径，用于定义伤害范围的内部边界
 	UPROPERTY(BlueprintReadWrite)
 	float RadialDamageInnerRadius = 0.f;
 
+	// 蓝图可读写的属性，表示范围伤害的外半径，用于定义伤害范围的外部边界
 	UPROPERTY(BlueprintReadWrite)
 	float RadialDamageOuterRadius = 0.f;
 
+	// 蓝图可读写的属性，表示范围伤害的中心点，用于确定伤害范围的位置
 	UPROPERTY(BlueprintReadWrite)
 	FVector RadialDamageOrigin = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsAttack = false;
 };
 
 
@@ -95,6 +119,7 @@ public:
 	float GetRadialDamageInnerRadius() const { return RadialDamageInnerRadius; }
 	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
 	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
+	bool GetIsAttack() const { return bIsAttack; }
 
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
@@ -106,6 +131,7 @@ public:
 	void SetDeathImpulse(const FVector& InImpulse) { DeathImpulse = InImpulse; }
 	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
+	void SetIsAttack(bool bInIsAttack) { bIsAttack = bInIsAttack; }
 
 	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius)
 	{
@@ -179,6 +205,9 @@ protected:
 
 	UPROPERTY()
 	FVector RadialDamageOrigin = FVector::ZeroVector;
+
+	UPROPERTY()
+	bool bIsAttack = false;
 };
 
 

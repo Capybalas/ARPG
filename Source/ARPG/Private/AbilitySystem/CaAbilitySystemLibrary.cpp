@@ -95,6 +95,34 @@ FGameplayTag UCaAbilitySystemLibrary::GetDamageType(const FGameplayEffectContext
 	return FGameplayTag();
 }
 
+bool UCaAbilitySystemLibrary::GetIsAttack(FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
+		EffectContextHandle.Get()))
+	{
+		return CaEffectContext->GetIsAttack();
+	}
+	return false;
+}
+
+void UCaAbilitySystemLibrary::SetIsAttack(FGameplayEffectContextHandle& EffectContextHandle, const bool InIsAttack)
+{
+	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		CaEffectContext->SetIsAttack(InIsAttack);
+	}
+}
+
+void UCaAbilitySystemLibrary::SetKnockbackForce(FGameplayEffectContextHandle& EffectContextHandle,
+                                                const FVector& InForce)
+{
+	if (FCaGameplayEffectContext* AuraEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.
+		Get()))
+	{
+		AuraEffectContext->SetKnockbackForce(InForce);
+	}
+}
+
 void UCaAbilitySystemLibrary::SetDeathImpulse(FGameplayEffectContextHandle& EffectContextHandle,
                                               const FVector& InImpulse)
 {
@@ -152,8 +180,8 @@ FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FD
 	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->
 	                                                                      MakeEffectContext();
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
-
 	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
+	SetKnockbackForce(EffectContextHandle, DamageEffectParams.KnockbackForce);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 

@@ -8,7 +8,6 @@
 #include "AbilitySystem/CaAbilitySystemLibrary.h"
 
 
-
 struct CaDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
@@ -36,12 +35,6 @@ UExecCalc_Damage::UExecCalc_Damage()
 void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
                                               FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	// const UAbilitySystemComponent* SourceASC = ExecutionParams.GetSourceAbilitySystemComponent();
-	// const UAbilitySystemComponent* TargetASC = ExecutionParams.GetTargetAbilitySystemComponent();
-
-	// const AActor* SourceAvatarActor = SourceASC ? SourceASC->GetAvatarActor() : nullptr;
-	// const AActor* TargetAvatarActor = TargetASC ? TargetASC->GetAvatarActor() : nullptr;
-
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
@@ -55,13 +48,13 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	float Damage = Spec.GetSetByCallerMagnitude(GameplayTags.AttackDamage, false, -1.f);
 	float TargetArmor = 0.f;
+	FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
 	if (Damage > 0.f)
 	{
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef, EvaluationParameters,
 		                                                           TargetArmor);
 		TargetArmor = FMath::Max<float>(TargetArmor, 0.f);
 
-		FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
 		UCaAbilitySystemLibrary::SetDamageType(ContextHandle, GameplayTags.AttackDamage);
 	}
 	else
@@ -71,6 +64,8 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().MagicResistanceDef,
 		                                                           EvaluationParameters,
 		                                                           TargetArmor);
+
+		UCaAbilitySystemLibrary::SetDamageType(ContextHandle, GameplayTags.AbilityPower);
 		TargetArmor = FMath::Max<float>(TargetArmor, 0.f);
 	}
 
