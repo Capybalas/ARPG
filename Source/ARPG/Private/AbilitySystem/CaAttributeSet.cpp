@@ -9,6 +9,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/CaAbilitySystemLibrary.h"
+#include "Character/CaCharacterBase.h"
 #include "Interface/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/CaPlayerController.h"
@@ -26,6 +27,7 @@ UCaAttributeSet::UCaAttributeSet()
 
 	TagsToAttributes.Add(GameplayTags.Attributes_Armor, GetArmorAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_MagicResistance, GetMagicResistanceAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_MoveSpeed, GetMoveSpeedAttribute);
 }
 
 void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -43,6 +45,7 @@ void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
 }
 
 void UCaAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -117,6 +120,11 @@ void UCaAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
 void UCaAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MaxMana, OldMaxMana);
+}
+
+void UCaAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed) const
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MoveSpeed, OldMoveSpeed);
 }
 
 void UCaAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage) const
@@ -194,13 +202,24 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		}
 		else
 		{
-			if (Props.TargetCharacter->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(
-				Props.TargetCharacter))
+			if (Props.TargetCharacter->Implements<UCombatInterface>())
 			{
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FCaGameplayTags::Get().Effects_HitReact);
+				if (UCaAbilitySystemLibrary::GetIsExecute(Props.EffectContextHandle))
+				{
+					if (ICombatInterface::Execute_IsExecute(Props.TargetCharacter))
+					{
+						TagContainer.AddTag(FCaGameplayTags::Get().Effects_ExecutedReact);
+					}
+				}
+				else if (!ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+				{
+					TagContainer.AddTag(FCaGameplayTags::Get().Effects_HitReact);
+				}
 				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
+
+
 			const FVector& KnockbackForce = UCaAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{

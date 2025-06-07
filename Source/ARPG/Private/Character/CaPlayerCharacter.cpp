@@ -4,25 +4,34 @@
 #include "Character/CaPlayerCharacter.h"
 
 #include "AbilitySystemComponent.h"
-#include "CaGameplayTags.h"
 #include "AbilitySystem/CaAbilitySystemComponent.h"
-#include "AbilitySystem/CaAttributeSet.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/CaPlayerState.h"
-#include "UI/Widget/CaUserWidget.h"
 
 ACaPlayerCharacter::ACaPlayerCharacter()
 {
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>("CameraBoom");
 	CameraBoom->SetupAttachment(GetRootComponent());
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->bUsePawnControlRotation = true;
 	CameraBoom->TargetArmLength = 800.f;
+	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 6.f;
 
 	TopDownCameraComponent = CreateDefaultSubobject<UCameraComponent>("TopDownCameraComponent");;
 	TopDownCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	TopDownCameraComponent->bUsePawnControlRotation = false;
+
+	/*
+	 * 处决碰撞
+	 */
 
 	CharacterClass = ECharacterClass::Player;
 
@@ -97,33 +106,128 @@ void ACaPlayerCharacter::OnRep_PlayerState()
 	InitAbilityActorInfo();
 }
 
+void ACaPlayerCharacter::SetLock_Implementation(bool bNewValue)
+{
+	Super::SetLock_Implementation(bNewValue);
+	if (bNewValue)
+	{
+		CameraBoom->SetRelativeLocation(FVector(0.f, 60.f, 62.f));
+	}
+	else
+	{
+		CameraBoom->SetRelativeLocation(FVector(0.f, 0.f, 62.f));
+	}
+}
+
+void ACaPlayerCharacter::SetPerInputTag_Implementation(FGameplayTag NewPerInputTag)
+{
+	PerInputTag = NewPerInputTag;
+}
+
+bool ACaPlayerCharacter::GetCanPerInput_Implementation()
+{
+	return bIsPerInput;
+}
+
+void ACaPlayerCharacter::SetCanPerInput_Implementation(bool bNewValue)
+{
+	bIsPerInput = bNewValue;
+}
+
+FGameplayTag ACaPlayerCharacter::GetPerInputTag_Implementation()
+{
+	return PerInputTag;
+}
+
+void ACaPlayerCharacter::SetExecuteActor_Implementation(AActor* Target)
+{
+	ExecuteTarget = Target;
+}
+
+AActor* ACaPlayerCharacter::GetExecuteActor_Implementation()
+{
+	return ExecuteTarget;
+}
+
+void ACaPlayerCharacter::SetIsCanExecute_Implementation(bool bNewValue)
+{
+	bIsCanExecute = bNewValue;
+}
+
+bool ACaPlayerCharacter::GetIsCanExecute_Implementation()
+{
+	return bIsCanExecute;
+}
+
+void ACaPlayerCharacter::InExecute(AActor* InActor)
+{
+	if (InActor->ActorHasTag("Enemy"))
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(InActor))
+		{
+			if (!CombatInterface->IsDead_Implementation() && CombatInterface->IsExecute_Implementation())
+			{
+				ExecuteTarget = InActor;
+			}
+		}
+	}
+}
+
+void ACaPlayerCharacter::OutExecute(AActor* OutActor)
+{
+	ExecuteTarget = nullptr;
+	bIsCanExecute = false;
+}
+
+
+// 角色进入处决碰撞范围内
+// void ACaPlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+//                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+//                                         const FHitResult& SweepResult)
+// {
+// 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(OtherActor))
+// 	{
+// 		if (CombatInterface->IsDead_Implementation() && CombatInterface->IsExecuteZone())
+// 		{
+// 			if (FVector::DotProduct(OtherActor->GetActorForwardVector(), GetActorForwardVector()) > 0.6f)
+// 			{
+// 				ExecuteTarget = OtherActor;
+// 				bIsCanExecute = true;
+// 			}
+// 		}
+// 	}
+// }
+//
+// // 角色离开处决碰撞范围内
+// void ACaPlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
+//                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+// {
+// 	ExecuteTarget = nullptr;
+// 	bIsCanExecute = false;
+// }
+
+void ACaPlayerCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	// if (bIsLocking)
+	// {
+	// 	if (IsValid(CombatTarget))
+	// 	{
+	// 		APlayerController* PlayerController = Cast<APlayerController>(GetOwner());
+	// 		FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	// 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(
+	// 			GetActorLocation(), CombatTargetLocation - FVector(0.f, 0.f, 80.f));
+	// 		FRotator TargetRotation = FRotator(FMath::Lerp(GetControlRotation(), LookAtRotation, 0.6f).Pitch,
+	// 		                                   LookAtRotation.Yaw, 0.f);
+	// 		FRotator NewRotation = FMath::RInterpTo(GetControlRotation(), TargetRotation, DeltaSeconds, 5.0f);
+	// 		PlayerController->SetControlRotation(NewRotation);
+	// 	}
+	// }
+}
+
 void ACaPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (UCaUserWidget* CaUserWidget = Cast<UCaUserWidget>(HealthBar->GetUserWidgetObject()))
-	{
-		CaUserWidget->SetWidgetController(this);
-	}
-
-	if (const UCaAttributeSet* CaAS = Cast<UCaAttributeSet>(AttributeSet))
-	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-
-		OnHealthChanged.Broadcast(CaAS->GetHealth());
-		OnMaxHealthChanged.Broadcast(CaAS->GetMaxHealth());
-	}
 }
 
 void ACaPlayerCharacter::InitAbilityActorInfo()

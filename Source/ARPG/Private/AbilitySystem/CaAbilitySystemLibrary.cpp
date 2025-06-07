@@ -105,6 +105,35 @@ bool UCaAbilitySystemLibrary::GetIsAttack(FGameplayEffectContextHandle& EffectCo
 	return false;
 }
 
+//
+// bool UCaAbilitySystemLibrary::GetIsExecute(FGameplayEffectContextHandle& EffectContextHandle)
+// {
+// 	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
+// 		EffectContextHandle.Get()))
+// 	{
+// 		return CaEffectContext->GetIsExecute();
+// 	}
+// 	return false;
+// }
+
+bool UCaAbilitySystemLibrary::GetIsExecute(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
+		EffectContextHandle.Get()))
+	{
+		return CaEffectContext->GetIsExecute();
+	}
+	return false;
+}
+
+void UCaAbilitySystemLibrary::SetIsExecute(FGameplayEffectContextHandle& EffectContextHandle, const bool InIsExecute)
+{
+	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		CaEffectContext->SetIsExecute(InIsExecute);
+	}
+}
+
 void UCaAbilitySystemLibrary::SetIsAttack(FGameplayEffectContextHandle& EffectContextHandle, const bool InIsAttack)
 {
 	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -174,7 +203,6 @@ void UCaAbilitySystemLibrary::SetDamageType(FGameplayEffectContextHandle& Effect
 
 FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FDamageEffectParams& DamageEffectParams)
 {
-	const FCaGameplayTags& GameplayTags = FCaGameplayTags::Get();
 	const AActor* SourceAvatarActor = DamageEffectParams.SourceAbilitySystemComponent->GetAvatarActor();
 
 	FGameplayEffectContextHandle EffectContextHandle = DamageEffectParams.SourceAbilitySystemComponent->
@@ -182,6 +210,8 @@ FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FD
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
 	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
 	SetKnockbackForce(EffectContextHandle, DamageEffectParams.KnockbackForce);
+	SetIsExecute(EffectContextHandle, DamageEffectParams.bIsExecute);
+	SetIsAttack(EffectContextHandle, DamageEffectParams.bIsAttack);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 

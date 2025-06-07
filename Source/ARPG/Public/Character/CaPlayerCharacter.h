@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Character/CaCharacterBase.h"
+#include "Interface/CaPerInput.h"
+#include "Interface/Execute.h"
 #include "CaPlayerCharacter.generated.h"
 
+class UBoxComponent;
 class UGameplayAbility;
 class UAttributeSet;
 class UAbilitySystemComponent;
@@ -15,7 +18,7 @@ class UCameraComponent;
  * 
  */
 UCLASS(config=Game)
-class ARPG_API ACaPlayerCharacter : public ACaCharacterBase
+class ARPG_API ACaPlayerCharacter : public ACaCharacterBase, public ICaPerInput, public IExecute
 {
 	GENERATED_BODY()
 
@@ -24,8 +27,53 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void OnRep_PlayerState() override;
+	virtual void SetLock_Implementation(bool bNewValue) override;
+
+
+	/**
+	 * PerInput
+	 */
+
+	virtual void SetPerInputTag_Implementation(FGameplayTag NewPerInputTag) override;
+	virtual void SetCanPerInput_Implementation(bool bNewValue) override;
+	virtual bool GetCanPerInput_Implementation() override;
+	virtual FGameplayTag GetPerInputTag_Implementation() override;
+	FGameplayTag PerInputTag;
+	bool bIsPerInput;
+
+	/**
+	 * Execute 处决
+	 */
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="处决")
+	TObjectPtr<AActor> ExecuteTarget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Equip")
+	bool bIsCanExecute = false;
+
+	virtual void SetExecuteActor_Implementation(AActor* Target) override;
+	virtual AActor* GetExecuteActor_Implementation() override;
+
+	virtual void SetIsCanExecute_Implementation(bool bNewValue) override;
+	virtual bool GetIsCanExecute_Implementation() override;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TObjectPtr<UBoxComponent> ExecuteZone;
+	
+	UFUNCTION(BlueprintCallable)
+	void InExecute(AActor* InActor);
+	
+	UFUNCTION(BlueprintCallable)
+	void OutExecute(AActor* OutActor);
+
+
+	/**
+	 * End Execute 处决
+	 */
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
 	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Equip")
 	// TObjectPtr<USkeletalMeshComponent> SM_All_00_HeadCoverings_NoHair;
@@ -80,13 +128,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equip")
 	TObjectPtr<USkeletalMeshComponent> SM_Gender_12_LegLeft;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USpringArmComponent> CameraBoom;
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> TopDownCameraComponent;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<USpringArmComponent> CameraBoom;
-
 
 	virtual void InitAbilityActorInfo() override;
 };

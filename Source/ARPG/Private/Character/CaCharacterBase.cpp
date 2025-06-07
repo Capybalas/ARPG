@@ -10,6 +10,8 @@
 #include "AbilitySystem/CaAttributeSet.h"
 #include  "ARPG/ARPG.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "UI/Widget/CaUserWidget.h"
 
 ACaCharacterBase::ACaCharacterBase()
 {
@@ -159,10 +161,75 @@ UNiagaraSystem* ACaCharacterBase::GetBloodEffect_Implementation()
 	return BloodEffect;
 }
 
+void ACaCharacterBase::StartSprinting_Implementation()
+{
+}
+
+void ACaCharacterBase::StopSprinting_Implementation()
+{
+}
+
+void ACaCharacterBase::SetCombatTarget_Implementation(AActor* NewTarget)
+{
+	CombatTarget = NewTarget;
+}
+
+AActor* ACaCharacterBase::GetCombatTarget_Implementation()
+{
+	return CombatTarget;
+}
+
+void ACaCharacterBase::SetLock_Implementation(bool bNewValue)
+{
+	bIsLocking = bNewValue;
+	GetCharacterMovement()->bUseControllerDesiredRotation = bNewValue;
+	GetCharacterMovement()->bOrientRotationToMovement = !bNewValue;
+}
+
+bool ACaCharacterBase::GetLock_Implementation()
+{
+	return bIsLocking;
+}
+
+void ACaCharacterBase::LockTarget_Implementation()
+{
+}
+
+void ACaCharacterBase::SetLockOnVisibility_Implementation(bool bIsDisplayLockIcon)
+{
+}
+
+void ACaCharacterBase::SetDodgeDirection_Implementation(FName NewDirection)
+{
+	DodgeDirection = NewDirection;
+}
+
+FName ACaCharacterBase::GetDodgeDirection_Implementation()
+{
+	return DodgeDirection;
+}
+
+UAnimMontage* ACaCharacterBase::GetDodgeMontage_Implementation()
+{
+	return DodgeMontage;
+}
+
+
+bool ACaCharacterBase::IsExecute_Implementation()
+{
+	return bIsExecute;
+}
+
+
+void ACaCharacterBase::OnMoveSpeedAttributeChanged(const float Value)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Value;
+}
+
 void ACaCharacterBase::MulticastHandleDeath_Implementation(const FVector& DeathImpulse)
 {
 	UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation(), GetActorRotation());
-	
+
 	Weapon->SetSimulatePhysics(true);
 	Weapon->SetEnableGravity(true);
 	Weapon->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
@@ -198,6 +265,44 @@ void ACaCharacterBase::BeginPlay()
 	Super::BeginPlay();
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, false);
 	Weapon->AttachToComponent(GetMesh(), AttachmentRules, WeaponHandSocket);
+
+	if (UCaUserWidget* CaUserWidget = Cast<UCaUserWidget>(HealthBar->GetUserWidgetObject()))
+	{
+		CaUserWidget->SetWidgetController(this);
+	}
+
+	if (const UCaAttributeSet* CaAS = Cast<UCaAttributeSet>(AttributeSet))
+	{
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMaxHealthAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxHealthChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMoveSpeedAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				this->OnMoveSpeedAttributeChanged(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_HitReact,
+		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&ACaCharacterBase::HitReactTagChanged
+		);
+
+		OnHealthChanged.Broadcast(CaAS->GetHealth());
+		OnMaxHealthChanged.Broadcast(CaAS->GetMaxHealth());
+	}
 }
 
 void ACaCharacterBase::AddCharacterAbilities()

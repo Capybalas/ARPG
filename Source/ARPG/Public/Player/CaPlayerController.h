@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "InputActionValue.h"
 #include "GameplayTagContainer.h"
+#include "InputAction.h"
 #include "GameFramework/PlayerController.h"
-#include "Interface/CaPerInput.h"
+#include "Interface/CombatInterface.h"
 #include "CaPlayerController.generated.h"
 
 /**
@@ -20,33 +21,25 @@ class UInputMappingContext;
 class UCaAbilitySystemComponent;
 
 UCLASS()
-class ARPG_API ACaPlayerController : public APlayerController, public ICaPerInput
+class ARPG_API ACaPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
 	ACaPlayerController();
 
-	/**
-	 * PerInput
-	 */
-	virtual void SetCanPerInput_Implementation(bool bNewValue) override;
-	virtual FGameplayTag GetPerInputTag_Implementation() override;
-	virtual void SetPerInputTag_Implementation(FGameplayTag NewTag) override;
-	/**
-	 * End PerInput
-	 */
-
 	UFUNCTION(Client, Reliable)
 	void ShowDamageNumber(float DamageAmount, ACharacter* TargetCharacter, bool bCriticalHit, FGameplayTag DamageType);
+	FVector2D MovementVector;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;
 
 private:
-	bool bPerInput = false;
-	FGameplayTag PerInputTag;
+	UPROPERTY(EditAnywhere, Category = "Config")
+	float LockRadius = 1200.f;
+
 	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 
@@ -54,7 +47,16 @@ private:
 	TObjectPtr<UInputAction> MoveAction;
 
 	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> LookAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
 	TObjectPtr<UInputAction> JumpAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> LockAction;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	TObjectPtr<UInputAction> DodgeOrSprintAction;
 
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UCaInputConfig> InputConfig;
@@ -65,6 +67,12 @@ private:
 	TObjectPtr<UCaAbilitySystemComponent> CaAbilitySystemComponent;
 
 	void Move(const FInputActionValue& InputActionValue);
+	void DodgeOrSprintStart(const FInputActionInstance& InputActionValue);
+	void DodgeOrSprintEnd(const FInputActionInstance& InputActionValue);
+	void Dodge(const FInputActionInstance& InputActionValue);
+	void MoveReleased();
+	void LockTarget();
+
 	void HandleJump();
 	void HandleStopJump();
 

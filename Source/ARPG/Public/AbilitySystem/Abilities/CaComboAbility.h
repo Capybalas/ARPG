@@ -38,6 +38,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Combo")
 	TArray<AActor*> Ignores;
+	
 
 	TArray<FHitResult> HitResults;
 

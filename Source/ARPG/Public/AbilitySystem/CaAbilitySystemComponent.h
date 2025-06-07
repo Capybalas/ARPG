@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "Data/CharacterClassInfo.h"
+#include "Interface/CaPerInput.h"
 #include "CaAbilitySystemComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARPG_API UCaAbilitySystemComponent : public UAbilitySystemComponent
+class ARPG_API UCaAbilitySystemComponent : public UAbilitySystemComponent, public ICaPerInput
 {
 	GENERATED_BODY()
 
@@ -19,6 +19,7 @@ public:
 	void AbilityActorInfoSet();
 	void AbilityInputTagHeld(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	bool bStartupAbilitiesGiven = false;
 

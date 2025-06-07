@@ -37,15 +37,27 @@ public:
 		meta = (DisplayName = "初始移速", ToolTip = "该角色的默认移动速度"))
 	float BaseWalkSpeed = 450.f;
 
+	UPROPERTY(BlueprintReadOnly, Category="Combat",
+		meta = (DisplayName = "最大移动速度", ToolTip = "该角色的最大移动速度"))
+	float MaxWalkSpeed = 600.f;
+
 	UPROPERTY(BlueprintReadWrite, Category = "Combat")
 	TObjectPtr<AActor> CombatTarget;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	bool bIsLocking = false;
 
 	UPROPERTY(EditAnywhere, Category="Combat",
 		meta = (DisplayName = "连招动画", ToolTip = "普通攻击的蒙太奇"))
 	UAnimMontage* ComboMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat",
+		meta = (DisplayName = "奔跑状态"))
+	bool bIsSprinting = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
 		meta = (DisplayName = "武器附加点"))
@@ -66,6 +78,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
 		meta = (DisplayName = "尾巴伤害判定点", ToolTip = "武器的判定点"))
 	FName TailSocketName = FName("");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat",
+		meta = (DisplayName = "闪避动画", ToolTip = "若某方向动画不存在，则使用就近的动画"))
+	UAnimMontage* DodgeMontage;
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat",
+		meta = (DisplayName = "可以触发处决", ToolTip = "该属性为真时，则不需要削韧即可在敌人后方触发处决"))
+	bool bIsExecute = true;
+
+	UPROPERTY()
+	FName DodgeDirection = "B";
 
 	virtual TArray<TSubclassOf<UGameplayAbility>> GetGameplayAbilities_Implementation() const;
 
@@ -94,9 +117,26 @@ public:
 	virtual AActor* GetAvatar_Implementation() override;
 
 	virtual UNiagaraSystem* GetBloodEffect_Implementation() override;
+	virtual void StartSprinting_Implementation() override;
+	virtual void StopSprinting_Implementation() override;
+	virtual void SetCombatTarget_Implementation(AActor* NewTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() override;
+	virtual void SetLock_Implementation(bool bNewValue) override;
+	virtual bool GetLock_Implementation() override;
+	virtual void LockTarget_Implementation() override;
+	virtual void SetLockOnVisibility_Implementation(bool bIsDisplayLockIcon) override;
+
+	virtual void SetDodgeDirection_Implementation(FName NewDirection) override;
+	virtual FName GetDodgeDirection_Implementation() override;
+	virtual UAnimMontage* GetDodgeMontage_Implementation() override;
+	virtual bool IsExecute_Implementation() override;
+
 	/**
 	 * End Combat Interface
 	 */
+
+	void OnMoveSpeedAttributeChanged(const float Value);
+
 	UPROPERTY(Replicated, BlueprintReadOnly)
 	bool bIsBeingShocked = false;
 	UFUNCTION(NetMulticast, Reliable)
@@ -109,7 +149,6 @@ public:
 	TArray<FTaggedMontage> AttackMontages;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	bool bIsDead = false;
 
@@ -122,6 +161,9 @@ protected:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMaxHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMoveSpeedChanged;
 
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 

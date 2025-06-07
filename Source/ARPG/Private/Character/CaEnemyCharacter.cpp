@@ -56,42 +56,11 @@ void ACaEnemyCharacter::PossessedBy(AController* NewController)
 void ACaEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	InitAbilityActorInfo();
+
 	if (HasAuthority())
 	{
 		UCaAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
-	}
-
-
-	if (UCaUserWidget* CaUserWidget = Cast<UCaUserWidget>(HealthBar->GetUserWidgetObject()))
-	{
-		CaUserWidget->SetWidgetController(this);
-	}
-
-	if (const UCaAttributeSet* CaAS = Cast<UCaAttributeSet>(AttributeSet))
-	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMaxHealthAttribute()).AddLambda(
-			[this](const FOnAttributeChangeData& Data)
-			{
-				OnMaxHealthChanged.Broadcast(Data.NewValue);
-			}
-		);
-
-		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_HitReact,
-		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
-			this,
-			&ACaEnemyCharacter::HitReactTagChanged
-		);
-
-		OnHealthChanged.Broadcast(CaAS->GetHealth());
-		OnMaxHealthChanged.Broadcast(CaAS->GetMaxHealth());
 	}
 }
 

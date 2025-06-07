@@ -42,6 +42,10 @@ public:
 	static bool GetIsAttack(UPARAM(ref)
 		FGameplayEffectContextHandle& EffectContextHandle);
 
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
+	static bool GetIsExecute(const FGameplayEffectContextHandle& EffectContextHandle);
+
+
 	/*
 	 * Set
 	 */
@@ -66,7 +70,11 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
 	static void SetIsAttack(UPARAM(ref)
-	                        FGameplayEffectContextHandle& EffectContextHandle, const bool InIsAttack);
+	                        FGameplayEffectContextHandle& EffectContextHandle, bool InIsAttack);
+
+	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
+	static void SetIsExecute(UPARAM(ref)
+	                         FGameplayEffectContextHandle& EffectContextHandle, bool InIsExecute);
 
 	UFUNCTION(BlueprintCallable, Category = "CaAbilitySystemLibrary|DamageEffect")
 	static void SetKnockbackForce(UPARAM(ref)

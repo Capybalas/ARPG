@@ -97,6 +97,10 @@ struct FDamageEffectParams
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsAttack = false;
+
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsExecute = false;
 };
 
 
@@ -120,6 +124,7 @@ public:
 	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
 	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
 	bool GetIsAttack() const { return bIsAttack; }
+	bool GetIsExecute() const { return bIsExecute; }
 
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
@@ -132,6 +137,7 @@ public:
 	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
 	void SetIsAttack(bool bInIsAttack) { bIsAttack = bInIsAttack; }
+	void SetIsExecute(bool bInIsExecute) { bIsExecute = bInIsExecute; }
 
 	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius)
 	{
@@ -208,6 +214,9 @@ protected:
 
 	UPROPERTY()
 	bool bIsAttack = false;
+
+	UPROPERTY()
+	bool bIsExecute = false;
 };
 
 

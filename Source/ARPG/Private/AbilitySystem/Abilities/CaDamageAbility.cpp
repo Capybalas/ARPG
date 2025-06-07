@@ -27,7 +27,7 @@ void UCaDamageAbility::InitCauseDamage()
 		              : AttributeSet->GetAbilityPower();
 }
 
-FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor) const
+FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor)
 {
 	FDamageEffectParams Params;
 	Params.WorldContextObject = GetAvatarActorFromActorInfo();
@@ -35,7 +35,14 @@ FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AA
 	Params.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 	Params.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	Params.AbilityLevel = GetAbilityLevel();
+	if (bIsAttack)
+	{
+		InitCauseDamage();
+	}
 	Params.BaseDamage = DamageValue == 0 ? Damage.GetValueAtLevel(GetAbilityLevel()) : DamageValue;
+
+	Params.bIsExecute = bIsExecute;
+
 	if (AttackImpulse != 0)
 	{
 		const FRotator Rotation(0, AttackImpulse, 0);

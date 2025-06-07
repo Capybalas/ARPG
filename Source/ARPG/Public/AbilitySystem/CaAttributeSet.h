@@ -84,6 +84,10 @@ public:
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxMana);
 
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MoveSpeed, Category = "Attributes")
+	FGameplayAttributeData MoveSpeed;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MoveSpeed);
+
 	// AttackDamage
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AttackDamage, Category = "Attributes")
 	FGameplayAttributeData AttackDamage;
@@ -104,6 +108,7 @@ public:
 	FGameplayAttributeData MagicResistance;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MagicResistance);
 
+
 	/**
 	 * Meta Attributes
 	 */
@@ -123,6 +128,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
+	
+	UFUNCTION()
+	void OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed) const;
 
 	UFUNCTION()
 	void OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage) const;

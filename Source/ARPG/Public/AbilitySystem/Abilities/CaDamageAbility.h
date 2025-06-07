@@ -24,7 +24,7 @@ public:
 	void InitCauseDamage();
 
 	UFUNCTION(BlueprintPure)
-	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr) const;
+	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr);
 
 	UFUNCTION(BlueprintPure)
 	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
@@ -64,6 +64,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Damage",
 		meta = (DisplayName = "击飞角度"))
 	float Pitch = 10.f;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "是处决伤害"))
+	bool bIsExecute = false;
 
 private:
 	float DamageValue = 0.f;

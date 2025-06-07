@@ -3,36 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
 #include "UObject/Interface.h"
-#include "CaPerInput.generated.h"
+#include "Execute.generated.h"
 
 // This class does not need to be modified.
-
-UINTERFACE(Blueprintable, MinimalAPI)
-class UCaPerInput : public UInterface
+UINTERFACE()
+class UExecute : public UInterface
 {
 	GENERATED_BODY()
 };
 
 /**
- * 
+ * 处决接口
  */
-class ARPG_API ICaPerInput
+class ARPG_API IExecute
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetCanPerInput(bool bNewValue);
-	
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool GetCanPerInput();
+	AActor* GetExecuteActor();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	FGameplayTag GetPerInputTag();
+	void SetExecuteActor(AActor* Target);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetPerInputTag(FGameplayTag NewPerInputTag);
+	void SetIsCanExecute(bool bNewValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool GetIsCanExecute();
 };

@@ -37,6 +37,11 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 		FString("最大魔法值")
 	);
 
+	GameplayTags.Attributes_MoveSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.MoveSpeed"),
+		FString("移动速度")
+	);
+
 	GameplayTags.Attributes_Armor = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.Armor"), FString("物理防御"));
 
@@ -58,6 +63,21 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Attack"), FString("Attack Tag"));
 
+	GameplayTags.Abilities_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.HitReact"), FString("Hit React Tag"));
+
+	GameplayTags.Abilities_Executed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Executed"), FString("Executed React Tag"));
+
+	GameplayTags.Abilities_Execute = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Execute"), FString("Execute React Tag"));
+
+	GameplayTags.Abilities_Sprint = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Sprint"), FString("Sprint Tag"));
+
+	GameplayTags.Abilities_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Dodge"), FString("Dodge Tag"));
+
 	/**
 	 * End Abilities
 	 */
@@ -76,6 +96,16 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effects_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.HitReact"), FString("Tag Granted when Hit Reacting"));
 
+	GameplayTags.Effects_ExecutedReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.ExecutedReact"), FString("Tag Granted when Executed Reacting"));
+
+	GameplayTags.Effects_ExecuteReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.ExecuteReact"), FString("Tag Granted when Execute Reacting"));
+
+	GameplayTags.Effects_Sprint = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.Sprint"), FString("Tag Granted when Sprint"));
+
+
 	/**
 	 * Weapon Socket
 	 */
@@ -91,6 +121,16 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.CombatSocket_Tail = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("CombatSocket.Tail"), FString("近战通过尾巴判定"));
+
+	/*
+	 * Event
+	 */
+
+	GameplayTags.Event_SprintStart = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Sprint.Start"), FString("奔跑开始"));
+
+	GameplayTags.Event_SprintEnd = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Sprint.End"), FString("奔跑结束"));
 
 	/*
 	 * Montage

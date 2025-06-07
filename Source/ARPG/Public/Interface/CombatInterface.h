@@ -6,9 +6,11 @@
 #include "Abilities/GameplayAbility.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
+
 class UAbilitySystemComponent;
 class UAnimMontage;
 class UNiagaraSystem;
+
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered, UAbilitySystemComponent*)
 
 USTRUCT(BlueprintType)
@@ -31,7 +33,7 @@ struct FTaggedMontage
 
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class UCombatInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -96,4 +98,43 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	UNiagaraSystem* GetBloodEffect();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void StartSprinting();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void StopSprinting();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetMoveSpeed(float NewSpeed);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetCombatTarget(AActor* NewTarget);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	AActor* GetCombatTarget();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool GetLock();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetLock(bool bNewValue);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void LockTarget();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetLockOnVisibility(bool bIsDisplayLockIcon);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetDodgeDirection(FName Direction);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FName GetDodgeDirection();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetDodgeMontage();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	bool IsExecute();
 };

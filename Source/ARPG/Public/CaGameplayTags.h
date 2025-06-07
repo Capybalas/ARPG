@@ -27,6 +27,7 @@ public:
 	FGameplayTag Attributes_AbilityPower;
 	FGameplayTag Attributes_MaxHealth;
 	FGameplayTag Attributes_MaxMana;
+	FGameplayTag Attributes_MoveSpeed;
 	FGameplayTag Attributes_Armor;
 	FGameplayTag Attributes_MagicResistance;
 	/**
@@ -59,14 +60,27 @@ public:
 	 * Abilities
 	 */
 	FGameplayTag Abilities_FireBolt;
-
 	FGameplayTag Abilities_Attack;
-
+	FGameplayTag Abilities_HitReact;
+	FGameplayTag Abilities_Executed;
+	FGameplayTag Abilities_Execute;
+	FGameplayTag Abilities_Sprint;
+	FGameplayTag Abilities_Dodge;
 
 	/*
 	 * Gameplay Effects
 	 */
 	FGameplayTag Effects_HitReact;
+	FGameplayTag Effects_ExecutedReact;
+	FGameplayTag Effects_ExecuteReact;
+	FGameplayTag Effects_Sprint;
+
+	/*
+	 * Event
+	 */
+
+	FGameplayTag Event_SprintStart;
+	FGameplayTag Event_SprintEnd;
 
 
 	/*

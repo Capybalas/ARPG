@@ -91,6 +91,11 @@ bool FCaGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 		{
 			RepBits |= 1 << 20;
 		}
+
+		if (bIsExecute)
+		{
+			RepBits |= 1 << 21;
+		}
 	}
 
 	Ar.SerializeBits(&RepBits, 20);
@@ -199,6 +204,11 @@ bool FCaGameplayEffectContext::NetSerialize(FArchive& Ar, UPackageMap* Map, bool
 	if (RepBits & (1 << 20))
 	{
 		Ar << bIsAttack;
+	}
+
+	if (RepBits & (1 << 21))
+	{
+		Ar << bIsExecute;
 	}
 
 

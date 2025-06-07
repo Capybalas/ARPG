@@ -3,28 +3,19 @@
 
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "CaGameplayTags.h"
 #include "AbilitySystem/Abilities/CaGameplayAbility.h"
 #include "Character/CaPlayerCharacter.h"
 #include "Game/CaGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
+// 按住
 void UCaAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
 {
-	if (!InputTag.IsValid()) return;
-	for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
-	{
-		if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
-		{
-			AbilitySpecInputPressed(AbilitySpec);
-			if (!AbilitySpec.IsActive())
-			{
-				TryActivateAbility(AbilitySpec.Handle);
-			}
-		}
-	}
 }
 
+// 松下按键
 void UCaAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
@@ -36,6 +27,42 @@ void UCaAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& Inpu
 			AbilitySpecInputReleased(AbilitySpec);
 		}
 	}
+}
+
+// 按下按键
+void UCaAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
+{
+	if (!InputTag.IsValid()) return;
+	FGameplayTagContainer TagsToActivate;
+	TagsToActivate.AddTag(InputTag);
+	TryActivateAbilitiesByTag(TagsToActivate, true);
+	if (ICaPerInput* PerInput = Cast<ICaPerInput>(GetAvatarActor()))
+	{
+		if (PerInput->GetCanPerInput_Implementation())
+		{
+			PerInput->SetPerInputTag_Implementation(InputTag);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White,
+			                                 FString::Printf(TEXT("InputTag: %s"), *InputTag.ToString()));
+		}
+	}
+
+
+	// for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
+	// {
+	// 	if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
+	// 	{
+	// 		AbilitySpecInputPressed(AbilitySpec);
+	// 		if (!AbilitySpec.IsActive())
+	// 		{
+	// 			TryActivateAbilitiesByTag()
+	// 			TryActivateAbility(AbilitySpec.Handle);
+	// 			if (bIsPerInput)
+	// 			{
+	// 				PerInputTag = InputTag;	
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 
 void UCaAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
