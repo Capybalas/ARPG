@@ -4,11 +4,8 @@
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
-#include "CaGameplayTags.h"
 #include "AbilitySystem/Abilities/CaGameplayAbility.h"
 #include "Character/CaPlayerCharacter.h"
-#include "Game/CaGameMode.h"
-#include "Kismet/GameplayStatics.h"
 
 // 按住
 void UCaAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputTag)
@@ -45,24 +42,6 @@ void UCaAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Input
 			                                 FString::Printf(TEXT("InputTag: %s"), *InputTag.ToString()));
 		}
 	}
-
-
-	// for (FGameplayAbilitySpec& AbilitySpec : GetActivatableAbilities())
-	// {
-	// 	if (AbilitySpec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
-	// 	{
-	// 		AbilitySpecInputPressed(AbilitySpec);
-	// 		if (!AbilitySpec.IsActive())
-	// 		{
-	// 			TryActivateAbilitiesByTag()
-	// 			TryActivateAbility(AbilitySpec.Handle);
-	// 			if (bIsPerInput)
-	// 			{
-	// 				PerInputTag = InputTag;	
-	// 			}
-	// 		}
-	// 	}
-	// }
 }
 
 void UCaAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
@@ -77,6 +56,22 @@ void UCaAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<U
 		}
 	}
 	bStartupAbilitiesGiven = true;
+}
+
+void UCaAbilitySystemComponent::AddToughnessEffect_Implementation()
+{
+	FGameplayEffectContextHandle GEContext = MakeEffectContext();
+	
+}
+
+void UCaAbilitySystemComponent::RemoveToughnessEffect_Implementation()
+{
+	IToughnessInterface::RemoveToughnessEffect_Implementation();
+}
+
+void UCaAbilitySystemComponent::ResetToughnessCooldownTimerHandle_Implementation()
+{
+	IToughnessInterface::ResetToughnessCooldownTimerHandle_Implementation();
 }
 
 void UCaAbilitySystemComponent::AbilityActorInfoSet()

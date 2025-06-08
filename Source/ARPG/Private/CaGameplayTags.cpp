@@ -80,8 +80,8 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Executed = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Executed"), FString("Executed React Tag"));
 
-	GameplayTags.Abilities_Execute = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Abilities.Execute"), FString("Execute React Tag"));
+	GameplayTags.Abilities_Stagger = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Stagger"), FString("Stagger React Tag"));
 
 	GameplayTags.Abilities_Sprint = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Sprint"), FString("Sprint Tag"));
@@ -110,8 +110,8 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effects_ExecutedReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.ExecutedReact"), FString("Tag Granted when Executed Reacting"));
 
-	GameplayTags.Effects_ExecuteReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
-		FName("Effects.ExecuteReact"), FString("Tag Granted when Execute Reacting"));
+	GameplayTags.Effects_Stagger = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.Stagger"), FString("Tag Granted when Stagger Reacting"));
 
 	GameplayTags.Effects_Sprint = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.Sprint"), FString("Tag Granted when Sprint"));

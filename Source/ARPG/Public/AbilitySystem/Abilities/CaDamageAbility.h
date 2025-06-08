@@ -34,8 +34,13 @@ public:
 	bool bIsAttack = false;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
+		meta=(DisplayName = "伤害效果类"))
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
+		meta=(DisplayName = "削韧效果类"))
+	TSubclassOf<UGameplayEffect> ToughnessEffectClass;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
 		meta = (DisplayName = "伤害类型"))

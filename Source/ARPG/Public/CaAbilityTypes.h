@@ -86,9 +86,11 @@ struct FDamageEffectParams
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsAttack = false;
 
-
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsExecute = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	float ToughnessReduction = 0.f;
 };
 
 
@@ -112,6 +114,7 @@ public:
 	FVector GetRadialDamageOrigin() const { return RadialDamageOrigin; }
 	bool GetIsAttack() const { return bIsAttack; }
 	bool GetIsExecute() const { return bIsExecute; }
+	float GetToughnessReduction() const { return ToughnessReduction; }
 
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
@@ -124,6 +127,7 @@ public:
 	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
 	void SetIsAttack(bool bInIsAttack) { bIsAttack = bInIsAttack; }
 	void SetIsExecute(bool bInIsExecute) { bIsExecute = bInIsExecute; }
+	void SetToughnessReduction(float InToughnessReduction) { ToughnessReduction = InToughnessReduction; }
 
 	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius)
 	{
@@ -142,20 +146,6 @@ public:
 	{
 		return StaticStruct();
 	}
-
-	/** Creates a copy of this context, used to duplicate for later modifications */
-	// virtual FCaGameplayEffectContext* Duplicate() const
-	// {
-	// 	FCaGameplayEffectContext* NewContext = new FCaGameplayEffectContext();
-	// 	*NewContext = *this;
-	// 	if (GetHitResult())
-	// 	{
-	// 		// Does a deep copy of the hit result
-	// 		NewContext->AddHitResult(*GetHitResult(), true);
-	// 	}
-	//
-	// 	return NewContext;
-	// }
 
 protected:
 	UPROPERTY()
@@ -198,4 +188,7 @@ protected:
 
 	UPROPERTY()
 	bool bIsExecute = false;
+
+	UPROPERTY()
+	float ToughnessReduction = 0.f;
 };

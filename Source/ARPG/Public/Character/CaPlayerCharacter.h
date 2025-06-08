@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Character/CaCharacterBase.h"
 #include "Interface/CaPerInput.h"
-#include "Interface/Execute.h"
+#include "Interface/ExecuteInterface.h"
 #include "CaPlayerCharacter.generated.h"
 
 class UBoxComponent;
@@ -18,7 +18,7 @@ class UCameraComponent;
  * 
  */
 UCLASS(config=Game)
-class ARPG_API ACaPlayerCharacter : public ACaCharacterBase, public ICaPerInput, public IExecute
+class ARPG_API ACaPlayerCharacter : public ACaCharacterBase, public ICaPerInput, public IExecuteInterface
 {
 	GENERATED_BODY()
 

@@ -130,7 +130,6 @@ public:
 	FGameplayAttributeData ToughnessRecoverSpeed;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, ToughnessRecoverSpeed);
 
-
 	/**
 	 * Meta Attributes
 	 */

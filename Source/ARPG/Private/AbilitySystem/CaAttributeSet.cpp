@@ -9,7 +9,6 @@
 #include "GameFramework/Character.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/CaAbilitySystemLibrary.h"
-#include "Character/CaCharacterBase.h"
 #include "Interface/CombatInterface.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/CaPlayerController.h"
@@ -28,6 +27,11 @@ UCaAttributeSet::UCaAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_Armor, GetArmorAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_MagicResistance, GetMagicResistanceAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_MoveSpeed, GetMoveSpeedAttribute);
+
+	TagsToAttributes.Add(GameplayTags.Attributes_Toughness, GetToughnessAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_MaxToughness, GetMaxToughnessAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_ToughnessRecoverTime, GetToughnessRecoverTimeAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_ToughnessRecoverSpeed, GetToughnessRecoverSpeedAttribute);
 }
 
 void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -46,6 +50,11 @@ void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Mana, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Toughness, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxToughness, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverTime, COND_None, REPNOTIFY_Always);
 }
 
 void UCaAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -59,6 +68,11 @@ void UCaAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute
 	if (Attribute == GetManaAttribute())
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxMana());
+	}
+
+	if (Attribute == GetToughnessAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxToughness());
 	}
 }
 
@@ -96,13 +110,13 @@ void UCaAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, f
 	{
 		SetHealth(GetMaxHealth());
 	}
-	
+
 	if (Attribute == GetMaxManaAttribute())
 	{
 		SetMana(GetMaxMana());
 	}
 
-	if (Attribute == GetToughnessAttribute())
+	if (Attribute == GetMaxToughnessAttribute())
 	{
 		SetToughness(GetMaxToughness());
 	}
@@ -152,8 +166,8 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		// 计算新的生命值，并确保其在0到最大生命值之间
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-		// 判断是否致命
 
+		// 判断是否致命
 		if (NewHealth <= 0.f)
 		{
 			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
@@ -163,30 +177,49 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		}
 		else
 		{
-			if (Props.TargetCharacter->Implements<UCombatInterface>())
+			const FCaGameplayTags& GameplayTags = FCaGameplayTags::Get();
+			FGameplayTagContainer TagContainer;
+			const float ToughnessReduction = UCaAbilitySystemLibrary::GetToughnessReduction(
+				Props.EffectContextHandle);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
+			                                 FString::Printf(TEXT("ToughnessReduction: %0.f"), ToughnessReduction));
+			// 计算韧性 本次削韧不为0或敌人正处于硬直中，不再计算削韧
+			if (ToughnessReduction > 0.f && !Props.TargetASC->HasMatchingGameplayTag(GameplayTags.Effects_Stagger))
 			{
-				FGameplayTagContainer TagContainer;
-				if (UCaAbilitySystemLibrary::GetIsExecute(Props.EffectContextHandle))
+				const float NewToughness = GetToughness() - ToughnessReduction;
+				SetToughness(NewToughness);
+				if (NewToughness <= 0.f)
 				{
-					if (ICombatInterface::Execute_IsExecute(Props.TargetCharacter))
+					// 打出硬直
+					TagContainer.AddTag(GameplayTags.Effects_Stagger);
+				}
+			}
+			else
+			{
+				if (Props.TargetCharacter->Implements<UCombatInterface>())
+				{
+					if (UCaAbilitySystemLibrary::GetIsExecute(Props.EffectContextHandle))
 					{
-						TagContainer.AddTag(FCaGameplayTags::Get().Effects_ExecutedReact);
+						if (ICombatInterface::Execute_IsExecute(Props.TargetCharacter))
+						{
+							TagContainer.AddTag(GameplayTags.Effects_ExecutedReact);
+						}
+					}
+					else if (!ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+					{
+						TagContainer.AddTag(GameplayTags.Effects_HitReact);
 					}
 				}
-				else if (!ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
-				{
-					TagContainer.AddTag(FCaGameplayTags::Get().Effects_HitReact);
-				}
-				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
-
-
+			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 		}
+
 		const bool bCriticalHit = UCaAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		const FGameplayTag DamageType = UCaAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);
 		ShowFloatingText(Props, LocalIncomingDamage, bCriticalHit, DamageType);
 	}
 }
+
 
 void UCaAttributeSet::ShowFloatingText(const FEffectProperties& Props, float Damage, bool bCriticalHit,
                                        FGameplayTag DamageType) const

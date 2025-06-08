@@ -4,32 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Execute.generated.h"
+#include "ToughnessInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE()
-class UExecute : public UInterface
+class UToughnessInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
 /**
- * 处决接口
+ * 
  */
-class ARPG_API IExecute
+class ARPG_API IToughnessInterface
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	AActor* GetExecuteActor();
-
+	void AddToughnessEffect();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetExecuteActor(AActor* Target);
-
+	void RemoveToughnessEffect();
+	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetIsCanExecute(bool bNewValue);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool GetIsCanExecute();
+	void ResetToughnessCooldownTimerHandle();
 };

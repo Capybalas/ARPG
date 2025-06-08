@@ -42,6 +42,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
 	static bool GetIsExecute(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
+	static float GetToughnessReduction(const FGameplayEffectContextHandle& EffectContextHandle);
 
 	/*
 	 * Set
@@ -72,6 +74,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
 	static void SetIsExecute(UPARAM(ref)
 	                         FGameplayEffectContextHandle& EffectContextHandle, bool InIsExecute);
+
+	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
+	static void SetToughnessReduction(UPARAM(ref)
+	                                  FGameplayEffectContextHandle& EffectContextHandle, float InToughness);
 
 
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|DamageEffect")

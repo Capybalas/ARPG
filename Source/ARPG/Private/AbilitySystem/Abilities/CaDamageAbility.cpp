@@ -35,6 +35,8 @@ FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AA
 	Params.SourceAbilitySystemComponent = GetAbilitySystemComponentFromActorInfo();
 	Params.TargetAbilitySystemComponent = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(TargetActor);
 	Params.AbilityLevel = GetAbilityLevel();
+	Params.ToughnessReduction = ToughnessReduction;
+
 	if (bIsAttack)
 	{
 		InitCauseDamage();

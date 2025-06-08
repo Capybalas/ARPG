@@ -67,7 +67,7 @@ public:
 	FGameplayTag Abilities_Attack;
 	FGameplayTag Abilities_HitReact;
 	FGameplayTag Abilities_Executed;
-	FGameplayTag Abilities_Execute;
+	FGameplayTag Abilities_Stagger;
 	FGameplayTag Abilities_Sprint;
 	FGameplayTag Abilities_Dodge;
 
@@ -76,8 +76,9 @@ public:
 	 */
 	FGameplayTag Effects_HitReact;
 	FGameplayTag Effects_ExecutedReact;
-	FGameplayTag Effects_ExecuteReact;
+	FGameplayTag Effects_Stagger;
 	FGameplayTag Effects_Sprint;
+	// FGameplayTag Effects_Stagger;
 
 	/*
 	 * Event

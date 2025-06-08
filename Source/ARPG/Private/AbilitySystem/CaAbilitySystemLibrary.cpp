@@ -116,6 +116,25 @@ bool UCaAbilitySystemLibrary::GetIsExecute(const FGameplayEffectContextHandle& E
 	return false;
 }
 
+float UCaAbilitySystemLibrary::GetToughnessReduction(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
+		EffectContextHandle.Get()))
+	{
+		return CaEffectContext->GetToughnessReduction();
+	}
+	return 0.f;
+}
+
+void UCaAbilitySystemLibrary::SetToughnessReduction(FGameplayEffectContextHandle& EffectContextHandle,
+                                                    float InToughnessReduction)
+{
+	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		CaEffectContext->SetToughnessReduction(InToughnessReduction);
+	}
+}
+
 void UCaAbilitySystemLibrary::SetIsExecute(FGameplayEffectContextHandle& EffectContextHandle, const bool InIsExecute)
 {
 	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
@@ -190,6 +209,7 @@ FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FD
 	EffectContextHandle.AddSourceObject(SourceAvatarActor);
 	SetDeathImpulse(EffectContextHandle, DamageEffectParams.DeathImpulse);
 	SetIsExecute(EffectContextHandle, DamageEffectParams.bIsExecute);
+	SetToughnessReduction(EffectContextHandle, DamageEffectParams.ToughnessReduction);
 	SetIsAttack(EffectContextHandle, DamageEffectParams.bIsAttack);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);

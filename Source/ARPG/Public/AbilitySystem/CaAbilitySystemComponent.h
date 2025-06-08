@@ -5,13 +5,15 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "Interface/CaPerInput.h"
+#include "Interface/ToughnessInterface.h"
 #include "CaAbilitySystemComponent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARPG_API UCaAbilitySystemComponent : public UAbilitySystemComponent, public ICaPerInput
+class ARPG_API UCaAbilitySystemComponent : public UAbilitySystemComponent, public ICaPerInput,
+                                           public IToughnessInterface
 {
 	GENERATED_BODY()
 
@@ -22,6 +24,14 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	bool bStartupAbilitiesGiven = false;
+
+	/*
+	 * 韧性系统
+	 */
+
+	void AddToughnessEffect_Implementation() override;
+	void RemoveToughnessEffect_Implementation() override;
+	void ResetToughnessCooldownTimerHandle_Implementation() override;
 
 protected:
 	UFUNCTION(Client, Reliable)
