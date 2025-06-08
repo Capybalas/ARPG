@@ -30,6 +30,10 @@ public:
 	FGameplayTag Attributes_MoveSpeed;
 	FGameplayTag Attributes_Armor;
 	FGameplayTag Attributes_MagicResistance;
+	FGameplayTag Attributes_Toughness;
+	FGameplayTag Attributes_MaxToughness;
+	FGameplayTag Attributes_ToughnessRecoverTime;
+	FGameplayTag Attributes_ToughnessRecoverSpeed;
 	/**
 	 * End Attribute
 	 */

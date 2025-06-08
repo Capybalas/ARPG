@@ -54,16 +54,12 @@ protected:
 	float AttackImpulse = 0.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category="Damage",
-		meta = (DisplayName = "击退", ToolTip = "该技能造成伤害时会对受伤单位造成击退"))
-	float KnockbackForceMagnitude = 60.f;
-
-	UPROPERTY(EditDefaultsOnly, Category="Damage",
-		meta = (DisplayName = "击退几率"))
-	float KnockbackChance = 0.f;
-
-	UPROPERTY(EditDefaultsOnly, Category="Damage",
 		meta = (DisplayName = "击飞角度"))
 	float Pitch = 10.f;
+
+	UPROPERTY(EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "削韧"))
+	float ToughnessReduction = 0.f;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage",
 		meta = (DisplayName = "是处决伤害"))

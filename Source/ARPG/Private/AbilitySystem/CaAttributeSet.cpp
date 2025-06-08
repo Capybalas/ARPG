@@ -96,55 +96,16 @@ void UCaAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, f
 	{
 		SetHealth(GetMaxHealth());
 	}
+	
 	if (Attribute == GetMaxManaAttribute())
 	{
 		SetMana(GetMaxMana());
 	}
-}
 
-void UCaAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Health, OldHealth);
-}
-
-void UCaAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MaxHealth, OldMaxHealth);
-}
-
-void UCaAttributeSet::OnRep_Mana(const FGameplayAttributeData& OldMana) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Mana, OldMana);
-}
-
-void UCaAttributeSet::OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MaxMana, OldMaxMana);
-}
-
-void UCaAttributeSet::OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MoveSpeed, OldMoveSpeed);
-}
-
-void UCaAttributeSet::OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, AttackDamage, OldAttackDamage);
-}
-
-void UCaAttributeSet::OnRep_Armor(const FGameplayAttributeData& OldArmor) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, Armor, OldArmor);
-}
-
-void UCaAttributeSet::OnRep_AbilityPower(const FGameplayAttributeData& OldAbilityPower) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, AbilityPower, OldAbilityPower);
-}
-
-void UCaAttributeSet::OnRep_MagicResistance(const FGameplayAttributeData& OldMagicResistance) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UCaAttributeSet, MagicResistance, OldMagicResistance);
+	if (Attribute == GetToughnessAttribute())
+	{
+		SetToughness(GetMaxToughness());
+	}
 }
 
 void UCaAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const
@@ -220,11 +181,6 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			}
 
 
-			const FVector& KnockbackForce = UCaAbilitySystemLibrary::GetKnockbackForce(Props.EffectContextHandle);
-			if (!KnockbackForce.IsNearlyZero(1.f))
-			{
-				Props.TargetCharacter->LaunchCharacter(KnockbackForce, true, true);
-			}
 		}
 		const bool bCriticalHit = UCaAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);
 		const FGameplayTag DamageType = UCaAbilitySystemLibrary::GetDamageType(Props.EffectContextHandle);

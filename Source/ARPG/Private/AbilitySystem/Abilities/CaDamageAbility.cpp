@@ -55,15 +55,6 @@ FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AA
 	}
 	Params.DamageType = DamageType;
 	Params.DeathImpulseMagnitude = DeathImpulseMagnitude;
-	Params.KnockbackChance = KnockbackChance;
-	Params.KnockbackForceMagnitude = KnockbackForceMagnitude;
-	if (FMath::RandRange(1, 100) < Params.KnockbackChance)
-	{
-		FRotator Rotation = GetAvatarActorFromActorInfo()->GetActorRotation();
-		Rotation.Pitch = Pitch;
-		const FVector KnockbackDirection = Rotation.Vector();
-		Params.KnockbackForce = KnockbackDirection * KnockbackForceMagnitude;
-	}
 
 	return Params;
 }

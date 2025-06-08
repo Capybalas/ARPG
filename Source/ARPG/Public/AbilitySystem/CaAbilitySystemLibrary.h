@@ -32,9 +32,6 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
 	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& EffectContextHandle);
 
-	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
-	static FVector GetKnockbackForce(const FGameplayEffectContextHandle& EffectContextHandle);
-
 	UFUNCTION(BlueprintPure, Category="AbilitySystemLibrary|GameplayEffects")
 	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& EffectContextHandle);
 
@@ -75,10 +72,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
 	static void SetIsExecute(UPARAM(ref)
 	                         FGameplayEffectContextHandle& EffectContextHandle, bool InIsExecute);
-
-	UFUNCTION(BlueprintCallable, Category = "CaAbilitySystemLibrary|DamageEffect")
-	static void SetKnockbackForce(UPARAM(ref)
-	                              FGameplayEffectContextHandle& EffectContextHandle, const FVector& InForce);
 
 
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|DamageEffect")

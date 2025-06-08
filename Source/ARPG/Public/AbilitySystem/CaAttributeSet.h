@@ -65,48 +65,70 @@ public:
 	/**
 	 * 主要属性
 	 */
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_Health, Category="Attributes")
+	// Health
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Health);
 
 	// MaxHealth
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxHealth);
 
 	// Mana
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Mana;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Mana);
 
 	// MaxMana
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxMana, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxMana;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxMana);
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MoveSpeed, Category = "Attributes")
+	// MoveSpeed
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MoveSpeed;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MoveSpeed);
 
 	// AttackDamage
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AttackDamage, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData AttackDamage;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, AttackDamage);
 
 	// Armor
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Armor, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Armor;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Armor);
 
 	// AbilityPower
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_AbilityPower, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData AbilityPower;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, AbilityPower);
 
 	// MagicResistance
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MagicResistance, Category = "Attributes")
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MagicResistance;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MagicResistance);
+
+	// 韧性
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData Toughness;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, Toughness);
+
+	// 最大韧性
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData MaxToughness;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, MaxToughness);
+
+	// 韧性恢复等待时间
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData ToughnessRecoverTime;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, ToughnessRecoverTime);
+
+	// 韧性恢复速度
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData ToughnessRecoverSpeed;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, ToughnessRecoverSpeed);
 
 
 	/**
@@ -115,35 +137,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category="Meta Attributes")
 	FGameplayAttributeData IncomingDamage;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, IncomingDamage)
-
-
-	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
-
-	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth) const;
-
-	UFUNCTION()
-	void OnRep_Mana(const FGameplayAttributeData& OldMana) const;
-
-	UFUNCTION()
-	void OnRep_MaxMana(const FGameplayAttributeData& OldMaxMana) const;
-	
-	UFUNCTION()
-	void OnRep_MoveSpeed(const FGameplayAttributeData& OldMoveSpeed) const;
-
-	UFUNCTION()
-	void OnRep_AttackDamage(const FGameplayAttributeData& OldAttackDamage) const;
-
-	UFUNCTION()
-	void OnRep_Armor(const FGameplayAttributeData& OldArmor) const;
-
-	UFUNCTION()
-	void OnRep_AbilityPower(const FGameplayAttributeData& OldAbilityPower) const;
-
-	UFUNCTION()
-
-	void OnRep_MagicResistance(const FGameplayAttributeData& OldMagicResistance) const;
 
 private:
 	void SetEffectProperties(const FGameplayEffectModCallbackData& Data, FEffectProperties& Props) const;

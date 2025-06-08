@@ -48,6 +48,17 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Attributes_MagicResistance = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.MagicResistance"), FString("魔法防御"));
 
+	GameplayTags.Attributes_Toughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.Toughness"), FString("韧性"));
+
+	GameplayTags.Attributes_MaxToughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.MaxToughness"), FString("最大韧性"));
+
+	GameplayTags.Attributes_ToughnessRecoverTime = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.ToughnessRecoverTime"), FString("韧性恢复等待时间"));
+
+	GameplayTags.Attributes_ToughnessRecoverSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.ToughnessRecoverSpeed"), FString("韧性恢复速度"));
 
 	/**
 	 * End Attributes

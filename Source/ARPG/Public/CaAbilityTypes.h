@@ -67,18 +67,6 @@ struct FDamageEffectParams
 	UPROPERTY(BlueprintReadWrite)
 	FVector DeathImpulse = FVector::ZeroVector;
 
-	// 蓝图可读写的属性，表示击退力的强度，用于在目标被击中时施加击退效果
-	UPROPERTY(BlueprintReadWrite)
-	float KnockbackForceMagnitude = 0.f;
-
-	// 蓝图可读写的属性，表示击退效果的概率，范围为 0 到 1
-	UPROPERTY(BlueprintReadWrite)
-	float KnockbackChance = 0.f;
-
-	// 蓝图可读写的属性，表示击退力的方向和大小
-	UPROPERTY(BlueprintReadWrite)
-	FVector KnockbackForce = FVector::ZeroVector;
-
 	// 蓝图可读写的属性，表示是否为范围伤害，用于区分单体伤害和范围伤害
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsRadialDamage = false;
@@ -118,7 +106,6 @@ public:
 	float GetDebuffFrequency() const { return DebuffFrequency; }
 	TSharedPtr<FGameplayTag> GetDamageType() const { return DamageType; }
 	FVector GetDeathImpulse() const { return DeathImpulse; }
-	FVector GetKnockbackForce() const { return KnockbackForce; }
 	bool IsRadialDamage() const { return bIsRadialDamage; }
 	float GetRadialDamageInnerRadius() const { return RadialDamageInnerRadius; }
 	float GetRadialDamageOuterRadius() const { return RadialDamageOuterRadius; }
@@ -134,7 +121,6 @@ public:
 	void SetDebuffFrequency(float InFrequency) { DebuffFrequency = InFrequency; }
 	void SetDamageType(TSharedPtr<FGameplayTag> InDamageType) { DamageType = InDamageType; }
 	void SetDeathImpulse(const FVector& InImpulse) { DeathImpulse = InImpulse; }
-	void SetKnockbackForce(const FVector& InForce) { KnockbackForce = InForce; }
 	void SetIsRadialDamage(bool bInIsRadialDamage) { bIsRadialDamage = bInIsRadialDamage; }
 	void SetIsAttack(bool bInIsAttack) { bIsAttack = bInIsAttack; }
 	void SetIsExecute(bool bInIsExecute) { bIsExecute = bInIsExecute; }
@@ -158,20 +144,18 @@ public:
 	}
 
 	/** Creates a copy of this context, used to duplicate for later modifications */
-	virtual FCaGameplayEffectContext* Duplicate() const
-	{
-		FCaGameplayEffectContext* NewContext = new FCaGameplayEffectContext();
-		*NewContext = *this;
-		if (GetHitResult())
-		{
-			// Does a deep copy of the hit result
-			NewContext->AddHitResult(*GetHitResult(), true);
-		}
-		return NewContext;
-	}
-
-	/** Custom serialization, subclasses must override this */
-	virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess);
+	// virtual FCaGameplayEffectContext* Duplicate() const
+	// {
+	// 	FCaGameplayEffectContext* NewContext = new FCaGameplayEffectContext();
+	// 	*NewContext = *this;
+	// 	if (GetHitResult())
+	// 	{
+	// 		// Does a deep copy of the hit result
+	// 		NewContext->AddHitResult(*GetHitResult(), true);
+	// 	}
+	//
+	// 	return NewContext;
+	// }
 
 protected:
 	UPROPERTY()
@@ -198,9 +182,6 @@ protected:
 	FVector DeathImpulse = FVector::ZeroVector;
 
 	UPROPERTY()
-	FVector KnockbackForce = FVector::ZeroVector;
-
-	UPROPERTY()
 	bool bIsRadialDamage = false;
 
 	UPROPERTY()
@@ -217,15 +198,4 @@ protected:
 
 	UPROPERTY()
 	bool bIsExecute = false;
-};
-
-
-template <>
-struct TStructOpsTypeTraits<FCaGameplayEffectContext> : public TStructOpsTypeTraitsBase2<FCaGameplayEffectContext>
-{
-	enum
-	{
-		WithNetSerializer = true,
-		WithCopy = true // Necessary so that TSharedPtr<FHitResult> Data is copied around
-	};
 };
