@@ -17,6 +17,7 @@ class ARPG_API ACaAIController : public AAIController
 
 public:
 	ACaAIController();
+	virtual void BeginPlay() override;
 
 protected:
 	UPROPERTY()

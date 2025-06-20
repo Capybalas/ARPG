@@ -34,12 +34,6 @@ ACaEnemyCharacter::ACaEnemyCharacter()
 	GetCharacterMovement()->MaxWalkSpeed;
 
 	AttributeSet = CreateDefaultSubobject<UCaAttributeSet>("AttributeSet");
-
-	// SelectEnemy = CreateDefaultSubobject<UWidgetComponent>(FName("SelectEnemy"));
-
-	// SelectEnemy->SetupAttachment(GetRootComponent());
-
-	// SelectEnemy->SetVisibility(false);
 }
 
 void ACaEnemyCharacter::PossessedBy(AController* NewController)
@@ -83,11 +77,25 @@ void ACaEnemyCharacter::Die(const FVector& DeathImpulse)
 
 void ACaEnemyCharacter::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : BaseWalkSpeed;
 	if (CaAIController && CaAIController->GetBlackboardComponent())
 	{
 		CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
+	}
+}
+
+void ACaEnemyCharacter::ExecutedReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (CaAIController && CaAIController->GetBlackboardComponent())
+	{
+		CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("ExecutedReacting"), bExecutedReacting);
+	}
+}
+
+void ACaEnemyCharacter::StaggerReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (CaAIController && CaAIController->GetBlackboardComponent())
+	{
+		CaAIController->GetBlackboardComponent()->SetValueAsBool(FName("StaggerReacting"), bStaggerReacting);
 	}
 }
 

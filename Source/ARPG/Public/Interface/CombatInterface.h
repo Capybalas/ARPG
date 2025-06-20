@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Enums/DamageDirection.h"
 #include "UObject/Interface.h"
 #include "CombatInterface.generated.h"
 
@@ -29,6 +30,24 @@ struct FTaggedMontage
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	USoundBase* ImpactSound = nullptr;
+};
+
+USTRUCT(BlueprintType)
+struct FCombo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "伤害倍数", ToolTip = "本次攻击造成攻击力的多少倍伤害"))
+	float DamageMultiplier = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "冲击力", ToolTip = "该伤害对目标造成的冲击力"))
+	float Impact = 1.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "架势韧性", ToolTip = "出招时临时获得的韧性"))
+	float ComboToughness = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "蒙太奇速率", ToolTip = "播放该蒙太奇的速率"))
+	float MontageRate = 1.f;
 };
 
 
@@ -88,9 +107,6 @@ public:
 	TArray<TSubclassOf<UGameplayAbility>> GetAttackAbilities() const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	UAnimMontage* GetHitReactMontage();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void StartWeaponNiagara();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -115,15 +131,6 @@ public:
 	AActor* GetCombatTarget();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool GetLock();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetLock(bool bNewValue);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void LockTarget();
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetLockOnVisibility(bool bIsDisplayLockIcon);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -137,4 +144,13 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool IsExecute();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FCombo GetComboData(int32 ComboIndex);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	EDamageDirection GetDamageDirection();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void SetDamageDirection(EDamageDirection InDamageDirection);
 };

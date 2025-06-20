@@ -4,33 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ExecuteInterface.generated.h"
+#include "Enums/DamageDirection.h"
+#include "MontageInterface.generated.h"
 
-// This class does not need to be modified.
 UINTERFACE()
-class UExecuteInterface : public UInterface
+class UMontageInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
 /**
- * 处决接口
+ * 
  */
-class ARPG_API IExecuteInterface
+class ARPG_API IMontageInterface
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	AActor* GetExecuteActor();
+	UAnimMontage* GetExecutionMontage();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetExecuteActor(AActor* Target);
+	UAnimMontage* GetToBeExterminated();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void SetIsCanExecute(bool bNewValue);
+	UAnimMontage* GetExecutionMontageForward();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool GetIsCanExecute();
+	UAnimMontage* GetToBeExterminatedForward();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	UAnimMontage* GetHitReactMontage();
 };

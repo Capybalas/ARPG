@@ -6,6 +6,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CaAbilitySystemComponent.h"
 #include "Data/CharacterClassInfo.h"
+#include "Enums/DamageDirection.h"
 #include "Interface/CombatInterface.h"
 #include "CaAbilitySystemLibrary.generated.h"
 
@@ -45,6 +46,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
 	static float GetToughnessReduction(const FGameplayEffectContextHandle& EffectContextHandle);
 
+	UFUNCTION(BlueprintPure, Category = "AbilitySystemLibrary|GameplayEffects")
+	static EDamageDirection GetDamageDirection(const FGameplayEffectContextHandle& EffectContextHandle);
+
+
 	/*
 	 * Set
 	 */
@@ -78,6 +83,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
 	static void SetToughnessReduction(UPARAM(ref)
 	                                  FGameplayEffectContextHandle& EffectContextHandle, float InToughness);
+
+	UFUNCTION(BlueprintCallable, Category="AbilitySystemLibrary|GameplayEffects")
+	static void SetDamageDirection(UPARAM(ref)
+	                               FGameplayEffectContextHandle& EffectContextHandle,
+	                               EDamageDirection InDamageDirection);
 
 
 	UFUNCTION(BlueprintCallable, Category = "AbilitySystemLibrary|DamageEffect")

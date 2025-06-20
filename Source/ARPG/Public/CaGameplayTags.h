@@ -34,6 +34,7 @@ public:
 	FGameplayTag Attributes_MaxToughness;
 	FGameplayTag Attributes_ToughnessRecoverTime;
 	FGameplayTag Attributes_ToughnessRecoverSpeed;
+
 	/**
 	 * End Attribute
 	 */
@@ -70,6 +71,8 @@ public:
 	FGameplayTag Abilities_Stagger;
 	FGameplayTag Abilities_Sprint;
 	FGameplayTag Abilities_Dodge;
+	FGameplayTag Abilities_ExecutedForwardReact;
+	FGameplayTag Abilities_Toughness;
 
 	/*
 	 * Gameplay Effects
@@ -78,7 +81,9 @@ public:
 	FGameplayTag Effects_ExecutedReact;
 	FGameplayTag Effects_Stagger;
 	FGameplayTag Effects_Sprint;
-	// FGameplayTag Effects_Stagger;
+	FGameplayTag Effects_ExecutedForwardReact;
+	FGameplayTag Effects_Toughness;
+	FGameplayTag Effects_Dodge;
 
 	/*
 	 * Event
@@ -86,6 +91,7 @@ public:
 
 	FGameplayTag Event_SprintStart;
 	FGameplayTag Event_SprintEnd;
+	FGameplayTag Event_Execute;
 
 
 	/*
@@ -94,6 +100,18 @@ public:
 	FGameplayTag Montage_Attack_Weapon;
 	FGameplayTag Montage_Attack_RightHand;
 	FGameplayTag Montage_Attack_LeftHand;
+
+	/**
+	 * State
+	 */
+
+	FGameplayTag State_PauseToughnessRegen;
+
+	/**
+	 * Test
+	 */
+	
+	FGameplayTag Test_1;
 
 private:
 	static FCaGameplayTags GameplayTags;

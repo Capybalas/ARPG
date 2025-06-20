@@ -58,7 +58,6 @@ void ACaPlayerController::SetupInputComponent()
 	CaInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACaPlayerController::Move);
 	CaInputComponent->BindAction(MoveAction, ETriggerEvent::Canceled, this, &ACaPlayerController::MoveReleased);
 	CaInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &ACaPlayerController::MoveReleased);
-	// CaInputComponent->BindAction(LockAction, ETriggerEvent::Started, this, &ACaPlayerController::LockTarget);
 
 	CaInputComponent->BindAction(DodgeOrSprintAction, ETriggerEvent::Triggered, this,
 	                             &ACaPlayerController::DodgeOrSprintStart);
@@ -88,21 +87,16 @@ void ACaPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr) return;
 	GetASC()->AbilityInputTagPressed(InputTag);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Pressed")));
 }
 
 void ACaPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (GetASC() == nullptr) return;
 	GetASC()->AbilityInputTagReleased(InputTag);
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Released")));
 }
 
 void ACaPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	// if (GetASC() == nullptr) return;
-	// GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("Held")));
-	// GetASC()->AbilityInputTagHeld(InputTag);
 }
 
 void ACaPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -127,7 +121,6 @@ void ACaPlayerController::DodgeOrSprintStart(const FInputActionInstance& InputAc
 	if (GetASC() == nullptr) return;
 	if (MovementVector.X > 0.f || MovementVector.Y > 0.f)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("DodgeOrSprintStart")));
 		FGameplayTagContainer TagsToActivate;
 		TagsToActivate.AddTag(FCaGameplayTags::Get().Abilities_Sprint);
 		GetASC()->TryActivateAbilitiesByTag(TagsToActivate);
@@ -140,15 +133,12 @@ void ACaPlayerController::DodgeOrSprintStart(const FInputActionInstance& InputAc
 
 void ACaPlayerController::DodgeOrSprintEnd(const FInputActionInstance& InputActionValue)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Blue, FString::Printf(TEXT("DodgeOrSprintEnd")));
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetPawn(), FCaGameplayTags::Get().Event_SprintEnd,
 	                                                         FGameplayEventData());
 }
 
 void ACaPlayerController::Dodge(const FInputActionInstance& InputActionValue)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString::Printf(TEXT("Dodge")));
-
 	if (GetCharacter()->GetCharacterMovement()->IsFalling()) return;
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetPawn());

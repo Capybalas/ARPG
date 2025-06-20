@@ -9,6 +9,10 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/Character.h"
 #include "Interface/CombatInterface.h"
+#include "Interface/LockInterface.h"
+#include "Interface/MontageInterface.h"
+#include "Enums/DamageDirection.h"
+#include "Interface/ToughnessInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "CaCharacterBase.generated.h"
 
@@ -20,75 +24,107 @@ class UGameplayAbility;
 class UAnimMontage;
 class UNiagaraComponent;
 
-
 UCLASS(Abstract)
-class ARPG_API ACaCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface
+class ARPG_API ACaCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICombatInterface,
+                                  public IToughnessInterface, public ILockInterface, public IMontageInterface
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ACaCharacterBase();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
-	UPROPERTY(BlueprintReadOnly, Category="Combat",
-		meta = (DisplayName = "初始移速", ToolTip = "该角色的默认移动速度"))
-	float BaseWalkSpeed = 450.f;
-
-	UPROPERTY(BlueprintReadOnly, Category="Combat",
-		meta = (DisplayName = "最大移动速度", ToolTip = "该角色的最大移动速度"))
-	float MaxWalkSpeed = 600.f;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	TObjectPtr<AActor> CombatTarget;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Combat")
-	bool bIsLocking = false;
-
-	UPROPERTY(EditAnywhere, Category="Combat",
-		meta = (DisplayName = "连招动画", ToolTip = "普通攻击的蒙太奇"))
-	UAnimMontage* ComboMontage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat",
-		meta = (DisplayName = "奔跑状态"))
-	bool bIsSprinting = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon")
+	// Component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon")
 	TObjectPtr<USkeletalMeshComponent> Weapon;
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon",
 		meta = (DisplayName = "武器附加点"))
 	FName WeaponHandSocket = FName("weapon_socket_r");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon",
 		meta = (DisplayName = "武器附加点"))
 	FName WeaponTipSocketName = FName("s1");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon",
 		meta = (DisplayName = "左手伤害判定点", ToolTip = "武器的判定点"))
 	FName LeftHandTipSocketName = FName("left_hand_socket");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon",
 		meta = (DisplayName = "右手伤害判定点", ToolTip = "武器的判定点"))
 	FName RightHandTipSocketName = FName("right_hand_socket");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Weapon",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Weapon",
 		meta = (DisplayName = "尾巴伤害判定点", ToolTip = "武器的判定点"))
 	FName TailSocketName = FName("");
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat",
-		meta = (DisplayName = "闪避动画", ToolTip = "若某方向动画不存在，则使用就近的动画"))
-	UAnimMontage* DodgeMontage;
+
+	// 其他
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
+
+	// State
+	UPROPERTY(BlueprintReadWrite, Category = "Combat|State")
+	bool bIsLocking = false;
 
 	UPROPERTY(BlueprintReadOnly, Category="Combat",
 		meta = (DisplayName = "可以触发处决", ToolTip = "该属性为真时，则不需要削韧即可在敌人后方触发处决"))
 	bool bIsExecute = true;
 
+	UPROPERTY(BlueprintReadOnly, Category="Combat|State",
+		meta = (DisplayName = "初始移速", ToolTip = "该角色的默认移动速度"))
+	float BaseWalkSpeed = 450.f;
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat|State",
+		meta = (DisplayName = "最大移动速度", ToolTip = "该角色的最大移动速度"))
+	float MaxWalkSpeed = 600.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat",
+		meta = (DisplayName = "奔跑状态"))
+	bool bIsSprinting = false;
+
+	// Montage
+	UPROPERTY(EditAnywhere, Category = "Combat|Montage",
+		meta = (DisplayName = "连招动画", ToolTip = "普通攻击的蒙太奇"))
+	UAnimMontage* ComboMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage",
+		meta = (DisplayName = "闪避动画", ToolTip = "若某方向动画不存在，则使用就近的动画"))
+	UAnimMontage* DodgeMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage", meta = (DisplayName = "处决动画"))
+	UAnimMontage* ExecutionMontage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage", meta = (DisplayName = "被处决动画"))
+	UAnimMontage* ToBeExterminated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage", meta = (DisplayName = "前方处决动画"))
+	UAnimMontage* ExecutionMontageForward;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage", meta = (DisplayName = "前方被处决动画"))
+	UAnimMontage* ToBeExterminatedForward;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Combat|Montage", meta = (DisplayName = "受击动画"))
+	TMap<EDamageDirection, UAnimMontage*> HitReactMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Combat|Data")
+	TArray<FCombo> ComboData;
+
+	UPROPERTY(EditDefaultsOnly, Category = "韧性",
+		meta=(DisplayName = "韧性恢复效果"))
+	TSubclassOf<UGameplayEffect> ToughnessRegenEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "韧性",
+		meta=(DisplayName = "阻止韧性恢复效果"))
+	TSubclassOf<UGameplayEffect> ToughnessBlockRegenEffect;
+
 	UPROPERTY()
 	FName DodgeDirection = "B";
+
+	UPROPERTY()
+	EDamageDirection DamageDirection;
 
 	virtual TArray<TSubclassOf<UGameplayAbility>> GetGameplayAbilities_Implementation() const;
 
@@ -110,7 +146,6 @@ public:
 	virtual UAnimMontage* GetCombatMontage_Implementation() override;
 	virtual FTaggedMontage GetTaggedMontageByTag_Implementation(const FGameplayTag& MontageTag) override;
 
-	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
 	virtual void StartWeaponNiagara_Implementation() override;
 	virtual void EndWeaponNiagara_Implementation() override;
 
@@ -123,18 +158,27 @@ public:
 	virtual AActor* GetCombatTarget_Implementation() override;
 	virtual void SetLock_Implementation(bool bNewValue) override;
 	virtual bool GetLock_Implementation() override;
-	virtual void LockTarget_Implementation() override;
+	virtual void LockTarget_Implementation();
 	virtual void SetLockOnVisibility_Implementation(bool bIsDisplayLockIcon) override;
 
 	virtual void SetDodgeDirection_Implementation(FName NewDirection) override;
 	virtual FName GetDodgeDirection_Implementation() override;
 	virtual UAnimMontage* GetDodgeMontage_Implementation() override;
 	virtual bool IsExecute_Implementation() override;
+	virtual FCombo GetComboData_Implementation(int32 ComboIndex) override;
+
+	virtual void SetDamageDirection_Implementation(EDamageDirection InDamageDirection) override;
+	virtual EDamageDirection GetDamageDirection_Implementation() override;
 
 	/**
 	 * End Combat Interface
 	 */
 
+	/*
+	 * 韧性系统
+	 */
+	virtual TSubclassOf<UGameplayEffect> GetToughnessBlockRegenEffect_Implementation() override;
+	virtual TSubclassOf<UGameplayEffect> GetToughnessRegenEffect_Implementation() override;
 	void OnMoveSpeedAttributeChanged(const float Value);
 
 	UPROPERTY(Replicated, BlueprintReadOnly)
@@ -142,11 +186,33 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
-	UPROPERTY(BlueprintReadOnly, Category="Combat")
+	UPROPERTY(BlueprintReadOnly, Category="Combat|State")
 	bool bHitReacting = false;
 
-	UPROPERTY(EditAnywhere, Category="Combat")
+	UPROPERTY(BlueprintReadOnly, Category="Combat|State")
+	bool bExecutedReacting = false;
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat|State")
+	bool bStaggerReacting = false;
+
+	UPROPERTY(BlueprintReadOnly, Category="Combat|Montage")
 	TArray<FTaggedMontage> AttackMontages;
+
+
+	/*
+	 * MontageInterface
+	 */
+
+	virtual UAnimMontage* GetExecutionMontage_Implementation() override;
+	virtual UAnimMontage* GetToBeExterminated_Implementation() override;
+	virtual UAnimMontage* GetExecutionMontageForward_Implementation() override;
+	virtual UAnimMontage* GetToBeExterminatedForward_Implementation() override;
+	virtual UAnimMontage* GetHitReactMontage_Implementation() override;
+
+	/*
+	 * End MontageInterface
+	 */
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -165,7 +231,15 @@ protected:
 	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnMoveSpeedChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnToughnessChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAttributeChangedSignature OnMaxToughnessChanged;
+
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void ExecutedReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void StaggerReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Combat",
 		meta = (DisplayName = "死亡声音", ToolTip = "死亡时播放音效"))
@@ -187,9 +261,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Info")
 	ECharacterClass CharacterClass = ECharacterClass::GoblinWarrior;
-
-	UPROPERTY(EditAnywhere, Category="Combat")
-	TObjectPtr<UAnimMontage> HitReactMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Niagara")
 	TObjectPtr<UNiagaraSystem> WeaponNiagaraSystem;

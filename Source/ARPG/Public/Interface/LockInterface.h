@@ -4,27 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "ToughnessInterface.generated.h"
+#include "LockInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE()
-class UToughnessInterface : public UInterface
+class ULockInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-class ARPG_API IToughnessInterface
+/**
+ * 
+ */
+class ARPG_API ILockInterface
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	TSubclassOf<UGameplayEffect> GetToughnessRegenEffect();
+	bool GetLock();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	TSubclassOf<UGameplayEffect> GetToughnessBlockRegenEffect();
-
+	void SetLock(bool bNewState);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ToughnessPause(float RecoverTime);
+	void SetLockTarget(bool bNewState);
 };

@@ -38,7 +38,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Combo")
 	TArray<AActor*> Ignores;
-	
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category="Combo")
+	FCombo ComboData;
+
 
 	TArray<FHitResult> HitResults;
 

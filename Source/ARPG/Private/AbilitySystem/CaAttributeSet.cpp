@@ -166,11 +166,11 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		// 计算新的生命值，并确保其在0到最大生命值之间
 		const float NewHealth = GetHealth() - LocalIncomingDamage;
 		SetHealth(FMath::Clamp(NewHealth, 0.f, GetMaxHealth()));
-
+		ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor);
 		// 判断是否致命
 		if (NewHealth <= 0.f)
 		{
-			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetAvatarActor))
+			if (CombatInterface)
 			{
 				CombatInterface->Die(UCaAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle));
 			}
@@ -178,40 +178,44 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 		else
 		{
 			const FCaGameplayTags& GameplayTags = FCaGameplayTags::Get();
-			FGameplayTagContainer TagContainer;
 			const float ToughnessReduction = UCaAbilitySystemLibrary::GetToughnessReduction(
 				Props.EffectContextHandle);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red,
-			                                 FString::Printf(TEXT("ToughnessReduction: %0.f"), ToughnessReduction));
-			// 计算韧性 本次削韧不为0或敌人正处于硬直中，不再计算削韧
-			if (ToughnessReduction > 0.f && !Props.TargetASC->HasMatchingGameplayTag(GameplayTags.Effects_Stagger))
+
+
+			// 不处于处决状态时
+			if (!Props.TargetASC->HasMatchingGameplayTag(GameplayTags.Effects_Stagger))
 			{
-				const float NewToughness = GetToughness() - ToughnessReduction;
-				SetToughness(NewToughness);
-				if (NewToughness <= 0.f)
+				// 削韧大于0且不是处决伤害
+				if (ToughnessReduction > 0.f && !UCaAbilitySystemLibrary::GetIsExecute(Props.EffectContextHandle))
 				{
-					// 打出硬直
-					TagContainer.AddTag(GameplayTags.Effects_Stagger);
-				}
-			}
-			else
-			{
-				if (Props.TargetCharacter->Implements<UCombatInterface>())
-				{
-					if (UCaAbilitySystemLibrary::GetIsExecute(Props.EffectContextHandle))
+					FGameplayTagContainer TagContainer;
+					float NewToughness = GetToughness() - ToughnessReduction;
+					if (NewToughness <= 0.f)
 					{
-						if (ICombatInterface::Execute_IsExecute(Props.TargetCharacter))
-						{
-							TagContainer.AddTag(GameplayTags.Effects_ExecutedReact);
-						}
+						// 硬直状态
+						TagContainer.AddTag(GameplayTags.Effects_Stagger);
+						NewToughness = GetMaxToughness();
 					}
-					else if (!ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+					// 削韧值超过10%，则触发踉跄
+					else if (ToughnessReduction / GetMaxToughness() >= 0.1f)
 					{
+						if (CombatInterface)
+						{
+							CombatInterface->SetDamageDirection_Implementation(
+								UCaAbilitySystemLibrary::GetDamageDirection(Props.EffectContextHandle));
+						}
 						TagContainer.AddTag(GameplayTags.Effects_HitReact);
 					}
+					// 存在削韧
+					Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+					SetToughness(NewToughness);
 				}
 			}
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+
+			if (IToughnessInterface* ToughnessInterface = Cast<IToughnessInterface>(Props.TargetASC))
+			{
+				ToughnessInterface->ToughnessPause_Implementation(GetToughnessRecoverTime());
+			}
 		}
 
 		const bool bCriticalHit = UCaAbilitySystemLibrary::IsCriticalHit(Props.EffectContextHandle);

@@ -11,6 +11,9 @@ void UOverlayWidgetController::BroadcastInitialValues()
 	OnHealthChanged.Broadcast(GetCaAttributeSet()->GetHealth());
 	OnMaxManaChanged.Broadcast(GetCaAttributeSet()->GetMaxMana());
 	OnManaChanged.Broadcast(GetCaAttributeSet()->GetMana());
+
+	OnMaxToughnessChanged.Broadcast(GetCaAttributeSet()->GetMaxToughness());
+	OnToughnessChanged.Broadcast(GetCaAttributeSet()->GetToughness());
 }
 
 void UOverlayWidgetController::BindCallbacksToDependencies()
@@ -47,4 +50,21 @@ void UOverlayWidgetController::BindCallbacksToDependencies()
 			OnManaChanged.Broadcast(Data.NewValue);
 		}
 	);
+
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetCaAttributeSet()->GetMaxToughnessAttribute()).
+	                        AddLambda(
+		                        [this](const FOnAttributeChangeData& Data)
+		                        {
+			                        OnMaxToughnessChanged.Broadcast(Data.NewValue);
+		                        }
+	                        );
+
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(GetCaAttributeSet()->GetToughnessAttribute()).
+	                        AddLambda(
+		                        [this](const FOnAttributeChangeData& Data)
+		                        {
+			                        OnToughnessChanged.Broadcast(Data.NewValue);
+		                        }
+	                        );
 }

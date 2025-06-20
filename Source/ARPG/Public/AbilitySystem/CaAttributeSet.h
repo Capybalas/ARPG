@@ -65,6 +65,7 @@ public:
 	/**
 	 * 主要属性
 	 */
+
 	// Health
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Health;

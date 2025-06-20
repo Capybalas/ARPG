@@ -5,7 +5,6 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "CaAbilityTypes.h"
-#include "CaGameplayTags.h"
 #include "Engine/OverlapResult.h"
 #include "Game/CaGameMode.h"
 #include "Interface/CombatInterface.h"
@@ -95,17 +94,6 @@ bool UCaAbilitySystemLibrary::GetIsAttack(FGameplayEffectContextHandle& EffectCo
 	return false;
 }
 
-//
-// bool UCaAbilitySystemLibrary::GetIsExecute(FGameplayEffectContextHandle& EffectContextHandle)
-// {
-// 	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
-// 		EffectContextHandle.Get()))
-// 	{
-// 		return CaEffectContext->GetIsExecute();
-// 	}
-// 	return false;
-// }
-
 bool UCaAbilitySystemLibrary::GetIsExecute(const FGameplayEffectContextHandle& EffectContextHandle)
 {
 	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
@@ -124,6 +112,25 @@ float UCaAbilitySystemLibrary::GetToughnessReduction(const FGameplayEffectContex
 		return CaEffectContext->GetToughnessReduction();
 	}
 	return 0.f;
+}
+
+EDamageDirection UCaAbilitySystemLibrary::GetDamageDirection(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FCaGameplayEffectContext* CaEffectContext = static_cast<const FCaGameplayEffectContext*>(
+		EffectContextHandle.Get()))
+	{
+		return CaEffectContext->GetDamageDirection();
+	}
+	return EDamageDirection::None;
+}
+
+void UCaAbilitySystemLibrary::SetDamageDirection(FGameplayEffectContextHandle& EffectContextHandle,
+                                                 EDamageDirection InDamageDirection)
+{
+	if (FCaGameplayEffectContext* CaEffectContext = static_cast<FCaGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		CaEffectContext->SetDamageDirection(InDamageDirection);
+	}
 }
 
 void UCaAbilitySystemLibrary::SetToughnessReduction(FGameplayEffectContextHandle& EffectContextHandle,
@@ -211,6 +218,7 @@ FGameplayEffectContextHandle UCaAbilitySystemLibrary::ApplyDamageEffect(const FD
 	SetIsExecute(EffectContextHandle, DamageEffectParams.bIsExecute);
 	SetToughnessReduction(EffectContextHandle, DamageEffectParams.ToughnessReduction);
 	SetIsAttack(EffectContextHandle, DamageEffectParams.bIsAttack);
+	SetDamageDirection(EffectContextHandle, DamageEffectParams.DamageDirection);
 	const FGameplayEffectSpecHandle SpecHandle = DamageEffectParams.SourceAbilitySystemComponent->MakeOutgoingSpec(
 		DamageEffectParams.DamageGameplayEffectClass, DamageEffectParams.AbilityLevel, EffectContextHandle);
 

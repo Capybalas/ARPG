@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ScalableFloat.h"
 #include "Engine/DataAsset.h"
 #include "CharacterClassInfo.generated.h"
 
@@ -19,6 +18,10 @@ enum class ECharacterClass : uint8
 	GoblinWarrior UMETA(DisplayName = "哥布林战士"),
 	GoblinThrower UMETA(DisplayName = "哥布林投掷手"),
 	Elementalist UMETA(DisplayName = "元素师"),
+	PigMan UMETA(DisplayName = "屠猪人"),
+	Death UMETA(DisplayName = "引渡人"),
+	Troll UMETA(DisplayName = "石巨人"),
+	
 };
 
 USTRUCT(BlueprintType)

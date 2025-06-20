@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "CaAbilityTypes.h"
 #include "CaGameplayAbility.h"
+#include "Enums/DamageDirection.h"
 #include "Interface/CombatInterface.h"
 #include "CaDamageAbility.generated.h"
 
@@ -69,6 +70,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage",
 		meta = (DisplayName = "是处决伤害"))
 	bool bIsExecute = false;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage",
+		meta = (DisplayName = "伤害方向来源", ToolTip = "影响受击单位触发命中的动画"))
+	EDamageDirection DamageDirection = EDamageDirection::None;
 
 private:
 	float DamageValue = 0.f;

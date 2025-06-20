@@ -4,6 +4,7 @@
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "CaGameplayTags.h"
 #include "AbilitySystem/Abilities/CaGameplayAbility.h"
 #include "Character/CaPlayerCharacter.h"
 
@@ -38,8 +39,6 @@ void UCaAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& Input
 		if (PerInput->GetCanPerInput_Implementation())
 		{
 			PerInput->SetPerInputTag_Implementation(InputTag);
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White,
-			                                 FString::Printf(TEXT("InputTag: %s"), *InputTag.ToString()));
 		}
 	}
 }
@@ -58,20 +57,52 @@ void UCaAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf<U
 	bStartupAbilitiesGiven = true;
 }
 
-void UCaAbilitySystemComponent::AddToughnessEffect_Implementation()
+void UCaAbilitySystemComponent::BeginPlay()
 {
-	FGameplayEffectContextHandle GEContext = MakeEffectContext();
-	
+	Super::BeginPlay();
+	if (IToughnessInterface* ToughnessInterface = Cast<IToughnessInterface>(GetAvatarActor()))
+	{
+		// 添加韧性恢复
+		if (TSubclassOf<UGameplayEffect> ToughnessRegenEffect = ToughnessInterface->
+			GetToughnessRegenEffect_Implementation())
+		{
+			FGameplayEffectContextHandle Context = MakeEffectContext();
+
+			FGameplayEffectSpecHandle ToughnessSpecHandle = MakeOutgoingSpec(
+				ToughnessInterface->GetToughnessRegenEffect_Implementation(),
+				1,
+				Context
+			);
+
+			ApplyGameplayEffectSpecToSelf(*ToughnessSpecHandle.Data);
+		}
+
+		if (TSubclassOf<UGameplayEffect> BlockRegenEffect = ToughnessInterface->
+			GetToughnessBlockRegenEffect_Implementation())
+		{
+			ToughnessBlockRegenEffect = BlockRegenEffect;
+		}
+	}
 }
 
-void UCaAbilitySystemComponent::RemoveToughnessEffect_Implementation()
+void UCaAbilitySystemComponent::ToughnessPause_Implementation(float RecoverTime)
 {
-	IToughnessInterface::RemoveToughnessEffect_Implementation();
-}
+	FGameplayEffectContextHandle Context = MakeEffectContext();
 
-void UCaAbilitySystemComponent::ResetToughnessCooldownTimerHandle_Implementation()
-{
-	IToughnessInterface::ResetToughnessCooldownTimerHandle_Implementation();
+	// 创建暂停 GE 实例
+	FGameplayEffectSpecHandle PauseSpecHandle = MakeOutgoingSpec(
+		ToughnessBlockRegenEffect,
+		1,
+		Context
+	);
+
+	// 设置持续时间 = ToughnessRecoverTime
+	PauseSpecHandle.Data->SetSetByCallerMagnitude(
+		FCaGameplayTags::Get().State_PauseToughnessRegen,
+		RecoverTime
+	);
+
+	ApplyGameplayEffectSpecToSelf(*PauseSpecHandle.Data);
 }
 
 void UCaAbilitySystemComponent::AbilityActorInfoSet()

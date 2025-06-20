@@ -1,5 +1,7 @@
 ﻿#pragma once
+
 #include "GameplayEffectTypes.h"
+#include "Enums/DamageDirection.h"
 #include "CaAbilityTypes.generated.h"
 
 
@@ -91,6 +93,9 @@ struct FDamageEffectParams
 
 	UPROPERTY(BlueprintReadWrite)
 	float ToughnessReduction = 0.f;
+
+	UPROPERTY(BlueprintReadWrite)
+	EDamageDirection DamageDirection = EDamageDirection::None;
 };
 
 
@@ -115,6 +120,7 @@ public:
 	bool GetIsAttack() const { return bIsAttack; }
 	bool GetIsExecute() const { return bIsExecute; }
 	float GetToughnessReduction() const { return ToughnessReduction; }
+	EDamageDirection GetDamageDirection() const { return DamageDirection; }
 
 	void SetIsCriticalHit(bool bInIsCriticalHit) { bIsCriticalHit = bInIsCriticalHit; }
 	void SetIsBlockedHit(bool bInIsBlockedHit) { bIsBlockedHit = bInIsBlockedHit; }
@@ -128,6 +134,7 @@ public:
 	void SetIsAttack(bool bInIsAttack) { bIsAttack = bInIsAttack; }
 	void SetIsExecute(bool bInIsExecute) { bIsExecute = bInIsExecute; }
 	void SetToughnessReduction(float InToughnessReduction) { ToughnessReduction = InToughnessReduction; }
+	void SetDamageDirection(EDamageDirection InDamageDirection) { DamageDirection = InDamageDirection; }
 
 	void SetRadialDamageInnerRadius(float InRadialDamageInnerRadius)
 	{
@@ -191,4 +198,7 @@ protected:
 
 	UPROPERTY()
 	float ToughnessReduction = 0.f;
+
+	UPROPERTY()
+	EDamageDirection DamageDirection = EDamageDirection::None;
 };

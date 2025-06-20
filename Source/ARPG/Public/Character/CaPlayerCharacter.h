@@ -6,6 +6,7 @@
 #include "Character/CaCharacterBase.h"
 #include "Interface/CaPerInput.h"
 #include "Interface/ExecuteInterface.h"
+#include "Interface/LockInterface.h"
 #include "CaPlayerCharacter.generated.h"
 
 class UBoxComponent;
@@ -60,10 +61,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UBoxComponent> ExecuteZone;
-	
+
 	UFUNCTION(BlueprintCallable)
 	void InExecute(AActor* InActor);
-	
+
 	UFUNCTION(BlueprintCallable)
 	void OutExecute(AActor* OutActor);
 
@@ -72,11 +73,9 @@ public:
 	 * End Execute 处决
 	 */
 
+
 protected:
-	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Equip")
-	// TObjectPtr<USkeletalMeshComponent> SM_All_00_HeadCoverings_NoHair;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Equip")
 	TObjectPtr<USkeletalMeshComponent> SM_Gender_00_Head; // 头

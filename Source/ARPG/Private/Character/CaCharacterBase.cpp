@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 #include "AbilitySystem/CaAttributeSet.h"
-#include  "ARPG/ARPG.h"
+#include "ARPG/ARPG.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UI/Widget/CaUserWidget.h"
@@ -136,11 +136,6 @@ FTaggedMontage ACaCharacterBase::GetTaggedMontageByTag_Implementation(const FGam
 	return FTaggedMontage();
 }
 
-UAnimMontage* ACaCharacterBase::GetHitReactMontage_Implementation()
-{
-	return HitReactMontage;
-}
-
 void ACaCharacterBase::StartWeaponNiagara_Implementation()
 {
 	ICombatInterface::StartWeaponNiagara_Implementation();
@@ -220,6 +215,34 @@ bool ACaCharacterBase::IsExecute_Implementation()
 	return bIsExecute;
 }
 
+FCombo ACaCharacterBase::GetComboData_Implementation(int32 ComboIndex)
+{
+	if (ComboIndex >= 0 && ComboIndex < ComboData.Num())
+	{
+		return ComboData[ComboIndex];
+	}
+	return FCombo();
+}
+
+void ACaCharacterBase::SetDamageDirection_Implementation(EDamageDirection InDamageDirection)
+{
+	DamageDirection = InDamageDirection;
+}
+
+EDamageDirection ACaCharacterBase::GetDamageDirection_Implementation()
+{
+	return DamageDirection;
+}
+
+TSubclassOf<UGameplayEffect> ACaCharacterBase::GetToughnessBlockRegenEffect_Implementation()
+{
+	return ToughnessBlockRegenEffect;
+}
+
+TSubclassOf<UGameplayEffect> ACaCharacterBase::GetToughnessRegenEffect_Implementation()
+{
+	return ToughnessRegenEffect;
+}
 
 void ACaCharacterBase::OnMoveSpeedAttributeChanged(const float Value)
 {
@@ -260,6 +283,43 @@ void ACaCharacterBase::HitReactTagChanged(const FGameplayTag CallbackTag, int32 
 {
 }
 
+void ACaCharacterBase::ExecutedReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+void ACaCharacterBase::StaggerReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+}
+
+UAnimMontage* ACaCharacterBase::GetExecutionMontage_Implementation()
+{
+	return ExecutionMontage;
+}
+
+UAnimMontage* ACaCharacterBase::GetToBeExterminated_Implementation()
+{
+	return ToBeExterminated;
+}
+
+UAnimMontage* ACaCharacterBase::GetExecutionMontageForward_Implementation()
+{
+	return ExecutionMontageForward;
+}
+
+UAnimMontage* ACaCharacterBase::GetToBeExterminatedForward_Implementation()
+{
+	return ToBeExterminatedForward;
+}
+
+UAnimMontage* ACaCharacterBase::GetHitReactMontage_Implementation()
+{
+	if (HitReactMontage.Contains(DamageDirection))
+	{
+		return HitReactMontage[DamageDirection];
+	}
+	return HitReactMontage[EDamageDirection::None];
+}
+
 void ACaCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -294,14 +354,50 @@ void ACaCharacterBase::BeginPlay()
 			}
 		);
 
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetToughnessAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnToughnessChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(CaAS->GetMaxToughnessAttribute()).AddLambda(
+			[this](const FOnAttributeChangeData& Data)
+			{
+				OnMaxToughnessChanged.Broadcast(Data.NewValue);
+			}
+		);
+
+
 		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_HitReact,
 		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this,
 			&ACaCharacterBase::HitReactTagChanged
 		);
 
+		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_ExecutedReact,
+		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&ACaCharacterBase::ExecutedReactTagChanged
+		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_ExecutedForwardReact,
+		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&ACaCharacterBase::ExecutedReactTagChanged
+		);
+
+		AbilitySystemComponent->RegisterGameplayTagEvent(FCaGameplayTags::Get().Effects_Stagger,
+		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
+			this,
+			&ACaCharacterBase::StaggerReactTagChanged
+		);
+
 		OnHealthChanged.Broadcast(CaAS->GetHealth());
 		OnMaxHealthChanged.Broadcast(CaAS->GetMaxHealth());
+
+		OnToughnessChanged.Broadcast(CaAS->GetToughness());
+		OnMaxToughnessChanged.Broadcast(CaAS->GetMaxToughness());
 	}
 }
 

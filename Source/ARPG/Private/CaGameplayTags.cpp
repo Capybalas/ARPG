@@ -89,6 +89,12 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Abilities_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Abilities.Dodge"), FString("Dodge Tag"));
 
+	GameplayTags.Abilities_ExecutedForwardReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.ExecutedForwardReact"), FString("Executed forward react Tag"));
+
+	GameplayTags.Abilities_Toughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Toughness"), FString("Toughness Tag"));
+
 	/**
 	 * End Abilities
 	 */
@@ -110,11 +116,20 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effects_ExecutedReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.ExecutedReact"), FString("Tag Granted when Executed Reacting"));
 
+	GameplayTags.Effects_ExecutedForwardReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.ExecutedForwardReact"), FString("Tag Granted when Executed Forward Reacting"));
+
 	GameplayTags.Effects_Stagger = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.Stagger"), FString("Tag Granted when Stagger Reacting"));
 
 	GameplayTags.Effects_Sprint = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Effects.Sprint"), FString("Tag Granted when Sprint"));
+
+	GameplayTags.Effects_Toughness = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.Toughness"), FString("Tag Granted when Toughness"));
+
+	GameplayTags.Effects_Dodge = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Effects.Dodge"), FString("Tag Granted when Dodge"));
 
 
 	/**
@@ -143,6 +158,9 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Event_SprintEnd = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Event.Sprint.End"), FString("奔跑结束"));
 
+	GameplayTags.Event_Execute = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Event.Execute"), FString("触发处决伤害"));
+
 	/*
 	 * Montage
 	 */
@@ -155,4 +173,18 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Montage_Attack_LeftHand = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Montage.Attack.LeftHand"), FString("武器蒙太奇"));
+
+	/**
+	 * State
+	 */
+
+	GameplayTags.State_PauseToughnessRegen = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("State.PauseToughnessRegen"), FString("暂停韧性恢复"));
+
+	/*
+	 * Test
+	 */
+
+	GameplayTags.Test_1 = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Test.1"), FString("测试标签1"));
 }

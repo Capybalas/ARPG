@@ -13,3 +13,12 @@ ACaAIController::ACaAIController()
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>("BehaviorTreeComponent");
 	check(BehaviorTreeComponent);
 }
+
+void ACaAIController::BeginPlay()
+{
+	Super::BeginPlay();
+	// if (Blackboard)
+	// {
+	// 	Blackboard->SetValueAsVector("InitLocation", GetPawn()->GetActorLocation());
+	// }
+}

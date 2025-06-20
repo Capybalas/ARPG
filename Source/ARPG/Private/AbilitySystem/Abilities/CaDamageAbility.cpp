@@ -57,6 +57,7 @@ FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AA
 	}
 	Params.DamageType = DamageType;
 	Params.DeathImpulseMagnitude = DeathImpulseMagnitude;
+	Params.DamageDirection = DamageDirection;
 
 	return Params;
 }

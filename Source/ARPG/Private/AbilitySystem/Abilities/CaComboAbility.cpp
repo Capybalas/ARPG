@@ -37,7 +37,7 @@ void UCaComboAbility::TraceChecking()
 			ObjectTypes,
 			false,
 			Ignores,
-			EDrawDebugTrace::None,
+			EDrawDebugTrace::ForDuration,
 			HitResults,
 			true
 		);

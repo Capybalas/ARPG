@@ -24,14 +24,13 @@ public:
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities);
 	bool bStartupAbilitiesGiven = false;
+	virtual void BeginPlay() override;
 
-	/*
-	 * 韧性系统
+	/**
+	 * Toughness
 	 */
-
-	void AddToughnessEffect_Implementation() override;
-	void RemoveToughnessEffect_Implementation() override;
-	void ResetToughnessCooldownTimerHandle_Implementation() override;
+	virtual void ToughnessPause_Implementation(float RecoverTime) override;
+	TSubclassOf<UGameplayEffect> ToughnessBlockRegenEffect;
 
 protected:
 	UFUNCTION(Client, Reliable)

@@ -36,4 +36,10 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
 	FOnAttributeChangedSignature OnMaxManaChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnToughnessChanged;
+
+	UPROPERTY(BlueprintAssignable, Category="GAS|Attributes")
+	FOnAttributeChangedSignature OnMaxToughnessChanged;
 };

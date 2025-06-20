@@ -41,6 +41,8 @@ public:
 
 	virtual void Die(const FVector& DeathImpulse) override;
 	virtual void HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+	virtual void ExecutedReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
+	virtual void StaggerReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount) override;
 
 protected:
 	virtual void InitAbilityActorInfo() override;

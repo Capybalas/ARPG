@@ -179,52 +179,6 @@ void ACaPlayerCharacter::OutExecute(AActor* OutActor)
 	bIsCanExecute = false;
 }
 
-
-// 角色进入处决碰撞范围内
-// void ACaPlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-//                                         UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-//                                         const FHitResult& SweepResult)
-// {
-// 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(OtherActor))
-// 	{
-// 		if (CombatInterface->IsDead_Implementation() && CombatInterface->IsExecuteZone())
-// 		{
-// 			if (FVector::DotProduct(OtherActor->GetActorForwardVector(), GetActorForwardVector()) > 0.6f)
-// 			{
-// 				ExecuteTarget = OtherActor;
-// 				bIsCanExecute = true;
-// 			}
-// 		}
-// 	}
-// }
-//
-// // 角色离开处决碰撞范围内
-// void ACaPlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-//                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-// {
-// 	ExecuteTarget = nullptr;
-// 	bIsCanExecute = false;
-// }
-
-void ACaPlayerCharacter::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-	// if (bIsLocking)
-	// {
-	// 	if (IsValid(CombatTarget))
-	// 	{
-	// 		APlayerController* PlayerController = Cast<APlayerController>(GetOwner());
-	// 		FVector CombatTargetLocation = CombatTarget->GetActorLocation();
-	// 		FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(
-	// 			GetActorLocation(), CombatTargetLocation - FVector(0.f, 0.f, 80.f));
-	// 		FRotator TargetRotation = FRotator(FMath::Lerp(GetControlRotation(), LookAtRotation, 0.6f).Pitch,
-	// 		                                   LookAtRotation.Yaw, 0.f);
-	// 		FRotator NewRotation = FMath::RInterpTo(GetControlRotation(), TargetRotation, DeltaSeconds, 5.0f);
-	// 		PlayerController->SetControlRotation(NewRotation);
-	// 	}
-	// }
-}
-
 void ACaPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
