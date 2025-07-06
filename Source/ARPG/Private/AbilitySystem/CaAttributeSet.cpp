@@ -32,30 +32,32 @@ UCaAttributeSet::UCaAttributeSet()
 	TagsToAttributes.Add(GameplayTags.Attributes_MaxToughness, GetMaxToughnessAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_ToughnessRecoverTime, GetToughnessRecoverTimeAttribute);
 	TagsToAttributes.Add(GameplayTags.Attributes_ToughnessRecoverSpeed, GetToughnessRecoverSpeedAttribute);
+	TagsToAttributes.Add(GameplayTags.Attributes_StunThreshold, GetStunThresholdAttribute);
 }
 
-void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+// void UCaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+// {
+// 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Armor, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Armor, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AttackDamage, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MagicResistance, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AbilityPower, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MagicResistance, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, AbilityPower, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Health, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Health, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Mana, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxMana, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Mana, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MoveSpeed, COND_None, REPNOTIFY_Always);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Toughness, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxToughness, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverTime, COND_None, REPNOTIFY_Always);
-}
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, Toughness, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, MaxToughness, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverSpeed, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, ToughnessRecoverTime, COND_None, REPNOTIFY_Always);
+// 	DOREPLIFETIME_CONDITION_NOTIFY(UCaAttributeSet, StunThreshold, COND_None, REPNOTIFY_Always);
+// }
 
 void UCaAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
@@ -196,8 +198,8 @@ void UCaAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 						TagContainer.AddTag(GameplayTags.Effects_Stagger);
 						NewToughness = GetMaxToughness();
 					}
-					// 削韧值超过10%，则触发踉跄
-					else if (ToughnessReduction / GetMaxToughness() >= 0.1f)
+					// 削韧值超过阈值时触发踉跄 或者 削韧超过当前阈值的 50%
+					else if (ToughnessReduction > GetStunThreshold() || ToughnessReduction > GetToughness() * 0.5f)
 					{
 						if (CombatInterface)
 						{

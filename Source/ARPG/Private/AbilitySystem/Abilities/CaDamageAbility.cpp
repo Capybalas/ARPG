@@ -27,6 +27,23 @@ void UCaDamageAbility::InitCauseDamage()
 		              : AttributeSet->GetAbilityPower();
 }
 
+EDamageDirection UCaDamageAbility::GetHitDirection(AActor* Target, EDamageDirection InDamageDirection)
+{
+	const FVector AttackForwardVector = GetAvatarActorFromActorInfo()->GetActorForwardVector();
+	const FVector TargetForwardVector = Target->GetActorForwardVector();
+
+	const float DotProduct = FVector::DotProduct(AttackForwardVector, TargetForwardVector);
+	const FVector CrossProduct = FVector::CrossProduct(AttackForwardVector, TargetForwardVector);
+
+	const float Angle = FMath::RadiansToDegrees(FMath::Atan2(CrossProduct.Z, DotProduct));
+	const float AngleOffset = FDamageDirectionUtils::ConvertEDamageDirectionToFloat(InDamageDirection);
+
+	EDamageDirection Direction = FDamageDirectionUtils::ConvertFloatToEDamageDirection(Angle + AngleOffset);
+	FString EnumAsString = UEnum::GetValueAsString(Direction);
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::White, *EnumAsString);
+	return Direction;
+}
+
 FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor)
 {
 	FDamageEffectParams Params;
@@ -57,7 +74,9 @@ FDamageEffectParams UCaDamageAbility::MakeDamageEffectParamsFromClassDefaults(AA
 	}
 	Params.DamageType = DamageType;
 	Params.DeathImpulseMagnitude = DeathImpulseMagnitude;
-	Params.DamageDirection = DamageDirection;
+
+	/*计算方向*/
+	Params.DamageDirection = GetHitDirection(TargetActor, DamageDirection);
 
 	return Params;
 }

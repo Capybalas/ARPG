@@ -34,6 +34,8 @@ public:
 	FGameplayTag Attributes_MaxToughness;
 	FGameplayTag Attributes_ToughnessRecoverTime;
 	FGameplayTag Attributes_ToughnessRecoverSpeed;
+	FGameplayTag Attributes_StunThreshold;
+
 
 	/**
 	 * End Attribute
@@ -110,7 +112,7 @@ public:
 	/**
 	 * Test
 	 */
-	
+
 	FGameplayTag Test_1;
 
 private:

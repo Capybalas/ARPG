@@ -101,18 +101,21 @@ void ACaPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 
 void ACaPlayerController::Move(const FInputActionValue& InputActionValue)
 {
-	MovementVector = InputActionValue.Get<FVector2D>();
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	if (APawn* PlayerActor = GetPawn())
+	if (APawn* PlayerPawn = GetPawn())
 	{
-		PlayerActor->AddMovementInput(ForwardDirection, MovementVector.Y);
-		PlayerActor->AddMovementInput(RightDirection, MovementVector.X);
+		MovementVector = InputActionValue.Get<FVector2D>();
+		const FRotator MovementRotation(0, GetControlRotation().Yaw, 0);
+		if (MovementVector.X != 0.f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+			PlayerPawn->AddMovementInput(MovementDirection, MovementVector.X);
+		}
+
+		if (MovementVector.Y != 0.f)
+		{
+			const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+			PlayerPawn->AddMovementInput(MovementDirection, MovementVector.Y);
+		}
 	}
 }
 
@@ -142,7 +145,7 @@ void ACaPlayerController::Dodge(const FInputActionInstance& InputActionValue)
 	if (GetCharacter()->GetCharacterMovement()->IsFalling()) return;
 
 	ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetPawn());
-	FName DodgeDirection = "B";
+	FName DodgeDirection = "D";
 	if (MovementVector.X != 0 || MovementVector.Y != 0)
 	{
 		float Dir = UKismetMathLibrary::MakeRotFromX(FVector(MovementVector.Y, MovementVector.X, 0)).Yaw;
@@ -310,9 +313,6 @@ void ACaPlayerController::HandleJump()
 {
 	if (ACharacter* PlayerActor = GetCharacter())
 	{
-		// if (!PlayerActor->GetCharacterMovement()->IsFalling())
-		// {
-		// }
 		PlayerActor->Jump();
 	}
 }

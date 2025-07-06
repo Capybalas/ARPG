@@ -95,7 +95,7 @@ struct FDamageEffectParams
 	float ToughnessReduction = 0.f;
 
 	UPROPERTY(BlueprintReadWrite)
-	EDamageDirection DamageDirection = EDamageDirection::None;
+	EDamageDirection DamageDirection = EDamageDirection::Forward;
 };
 
 
@@ -200,5 +200,5 @@ protected:
 	float ToughnessReduction = 0.f;
 
 	UPROPERTY()
-	EDamageDirection DamageDirection = EDamageDirection::None;
+	EDamageDirection DamageDirection = EDamageDirection::Forward;
 };

@@ -26,7 +26,7 @@ class ARPG_API ICaPerInput
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetCanPerInput(bool bNewValue);
-	
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	bool GetCanPerInput();
 

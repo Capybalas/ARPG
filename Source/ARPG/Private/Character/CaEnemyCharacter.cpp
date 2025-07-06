@@ -10,7 +10,6 @@
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 #include "AbilitySystem/CaAttributeSet.h"
 #include "AI/CaAIController.h"
-#include "UI/Widget/CaUserWidget.h"
 #include "BehaviorTree/BehaviorTree.h"
 
 ACaEnemyCharacter::ACaEnemyCharacter()

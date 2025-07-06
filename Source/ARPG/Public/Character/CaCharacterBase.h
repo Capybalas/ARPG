@@ -229,9 +229,6 @@ protected:
 	FOnAttributeChangedSignature OnMaxHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnAttributeChangedSignature OnMoveSpeedChanged;
-
-	UPROPERTY(BlueprintAssignable)
 	FOnAttributeChangedSignature OnToughnessChanged;
 
 	UPROPERTY(BlueprintAssignable)

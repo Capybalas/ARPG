@@ -7,6 +7,11 @@
 #include "Character/CaCharacterBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+UCaComboAbility::UCaComboAbility()
+{
+	ObjectTypes.Add(TEnumAsByte<EObjectTypeQuery>(ECC_Pawn));
+}
+
 void UCaComboAbility::StartTracing()
 {
 	const TObjectPtr<ACaCharacterBase> Character = Cast<ACaCharacterBase>(GetAvatarActorFromActorInfo());
@@ -37,7 +42,8 @@ void UCaComboAbility::TraceChecking()
 			ObjectTypes,
 			false,
 			Ignores,
-			EDrawDebugTrace::ForDuration,
+			bIsShowDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+			// EDrawDebugTrace::None,
 			HitResults,
 			true
 		);

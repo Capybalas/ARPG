@@ -56,7 +56,7 @@ class ARPG_API UCaAttributeSet : public UAttributeSet
 
 public:
 	UCaAttributeSet();
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	// virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
@@ -130,6 +130,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData ToughnessRecoverSpeed;
 	ATTRIBUTE_ACCESSORS(UCaAttributeSet, ToughnessRecoverSpeed);
+
+	// 踉跄阈值
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData StunThreshold;
+	ATTRIBUTE_ACCESSORS(UCaAttributeSet, StunThreshold);
 
 	/**
 	 * Meta Attributes

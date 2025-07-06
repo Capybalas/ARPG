@@ -24,11 +24,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void InitCauseDamage();
 
+	UFUNCTION(BlueprintCallable)
+	EDamageDirection GetHitDirection(AActor* Target, EDamageDirection InDamageDirection);
+
 	UFUNCTION(BlueprintPure)
 	FDamageEffectParams MakeDamageEffectParamsFromClassDefaults(AActor* TargetActor = nullptr);
 
 	UFUNCTION(BlueprintPure)
 	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Damage",
 		meta = (DisplayName = "攻击伤害"))
@@ -73,7 +77,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Damage",
 		meta = (DisplayName = "伤害方向来源", ToolTip = "影响受击单位触发命中的动画"))
-	EDamageDirection DamageDirection = EDamageDirection::None;
+	EDamageDirection DamageDirection = EDamageDirection::Forward;
 
 private:
 	float DamageValue = 0.f;

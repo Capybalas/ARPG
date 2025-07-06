@@ -121,7 +121,7 @@ EDamageDirection UCaAbilitySystemLibrary::GetDamageDirection(const FGameplayEffe
 	{
 		return CaEffectContext->GetDamageDirection();
 	}
-	return EDamageDirection::None;
+	return EDamageDirection::Forward;
 }
 
 void UCaAbilitySystemLibrary::SetDamageDirection(FGameplayEffectContextHandle& EffectContextHandle,

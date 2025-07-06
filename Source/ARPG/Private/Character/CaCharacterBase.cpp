@@ -41,6 +41,11 @@ void ACaCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
+// void ACaCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+// {
+// 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+// }
+
 UAbilitySystemComponent* ACaCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -68,7 +73,7 @@ void ACaCharacterBase::Die(const FVector& DeathImpulse)
 	if (HealthBar)
 	{
 		HealthBar->DestroyComponent();
-		HealthBar == nullptr;
+		HealthBar = nullptr;
 	}
 	MulticastHandleDeath(DeathImpulse);
 }
@@ -177,7 +182,6 @@ AActor* ACaCharacterBase::GetCombatTarget_Implementation()
 void ACaCharacterBase::SetLock_Implementation(bool bNewValue)
 {
 	bIsLocking = bNewValue;
-	GetCharacterMovement()->bUseControllerDesiredRotation = bNewValue;
 	GetCharacterMovement()->bOrientRotationToMovement = !bNewValue;
 }
 
@@ -317,7 +321,7 @@ UAnimMontage* ACaCharacterBase::GetHitReactMontage_Implementation()
 	{
 		return HitReactMontage[DamageDirection];
 	}
-	return HitReactMontage[EDamageDirection::None];
+	return HitReactMontage[EDamageDirection::Forward];
 }
 
 void ACaCharacterBase::BeginPlay()

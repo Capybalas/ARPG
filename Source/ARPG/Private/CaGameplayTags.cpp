@@ -59,6 +59,9 @@ void FCaGameplayTags::InitializeNativeGameplayTags()
 
 	GameplayTags.Attributes_ToughnessRecoverSpeed = UGameplayTagsManager::Get().AddNativeGameplayTag(
 		FName("Attributes.ToughnessRecoverSpeed"), FString("韧性恢复速度"));
+	
+	GameplayTags.Attributes_StunThreshold = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Attributes.StunThreshold"), FString("踉跄阈值"));
 
 	/**
 	 * End Attributes

@@ -6,7 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystem/CaAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Player/CaPlayerState.h"
 
@@ -109,6 +109,7 @@ void ACaPlayerCharacter::OnRep_PlayerState()
 void ACaPlayerCharacter::SetLock_Implementation(bool bNewValue)
 {
 	Super::SetLock_Implementation(bNewValue);
+	GetCharacterMovement()->bUseControllerDesiredRotation = bNewValue;
 	if (bNewValue)
 	{
 		CameraBoom->SetRelativeLocation(FVector(0.f, 60.f, 62.f));

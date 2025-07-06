@@ -21,7 +21,7 @@ enum class ECharacterClass : uint8
 	PigMan UMETA(DisplayName = "屠猪人"),
 	Death UMETA(DisplayName = "引渡人"),
 	Troll UMETA(DisplayName = "石巨人"),
-	
+	SkeletonKnight UMETA(DisplayName = "骷髅骑士"),
 };
 
 USTRUCT(BlueprintType)
